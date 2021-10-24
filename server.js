@@ -28,7 +28,8 @@ app.set('trust proxy', true);
 
 function post_boat(name, type, length) {
     var key = datastore.key(BOAT);
-    const new_boat = { "name": name, "type": type, "length": length, "loads": [] };
+    var loads = []; 
+    const new_boat = { "name": name, "type": type, "length": length, "loads": loads };
     return datastore.save({ "key": key, "data": new_boat }).then(() => { 
         new_boat.id = key.id; 
         return new_boat });
