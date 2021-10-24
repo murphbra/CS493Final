@@ -46,7 +46,7 @@ function post_slip(number) {
 function post_load(volume, content) {
     var key = datastore.key(LOAD);
     let creation_date = new Date().toLocaleDateString();        //based on code example at source: https://stackabuse.com/how-to-get-the-current-date-in-javascript/
-    const new_load = { "volume": volume, "content": content, "creation_date": creation_date };
+    const new_load = { "volume": volume, "carrier": null, "content": content, "creation_date": creation_date };
     return datastore.save({ "key": key, "data": new_load }).then(() => { 
         new_load.id = key.id; 
         return new_load });
@@ -194,7 +194,7 @@ router.post('/loads', function (req, res) {
     else 
     {
         post_load(req.body.volume, req.body.content).then(new_load => { 
-            new_load.self = "https://cs493a4-329921.wm.r.appspot.com/slips/" + new_load.id; 
+            new_load.self = "https://cs493a4-329921.wm.r.appspot.com/loads/" + new_load.id; 
             res.status(201).send(new_load); 
         }); 
     }
