@@ -34,15 +34,8 @@ function post_boat(name, type, length) {
         new_boat.id = key.id; 
         return new_boat });
 }
-/*
-function post_slip(number) {
-    var key = datastore.key(SLIP);
-    const new_slip = { "number": number, "current_boat": null };
-    return datastore.save({ "key": key, "data": new_slip }).then(() => { 
-        new_slip.id = key.id; 
-        return new_slip });
-}
-*/
+
+
 function post_load(volume, content) {
     var key = datastore.key(LOAD);
     let creation_date = new Date().toLocaleDateString();        //based on code example at source: https://stackabuse.com/how-to-get-the-current-date-in-javascript/
@@ -53,9 +46,7 @@ function post_load(volume, content) {
 }
 
 /**
- * The function datastore.query returns an array, where the element at index 0
- * is itself an array. Each element in the array at element 0 is a JSON object
- * with an entity fromt the type "Lodging".
+ * 
  */
 
 function get_boats() {
@@ -68,8 +59,8 @@ function get_boats() {
     });
 }
 
-function get_slips() {
-    const q = datastore.createQuery(SLIP);
+function get_loads() {
+    const q = datastore.createQuery(LOADS);
     return datastore.runQuery(q).then((entities) => {
         // Use Array.map to call the function fromDatastore. This function
         // adds id attribute to every element in the array at element 0 of
@@ -92,8 +83,8 @@ function get_boat(id) {
     });
 }
 
-function get_slip(id) {
-    const key = datastore.key([SLIP, parseInt(id, 10)]);
+function get_load(id) {
+    const key = datastore.key([LOAD, parseInt(id, 10)]);
     return datastore.get(key).then((entity) => {
         if (entity[0] === undefined || entity[0] === null) {
             // No entity found. Don't try to add the id attribute
@@ -150,13 +141,13 @@ router.get('/boats', function (req, res) {
 });
 
 router.get('/slips', function (req, res) {
-    const slips = get_slips().then((slips) => {
+    const loads = get_loads().then((loads) => {
 
-            for(var i = 0; i< slips.length ; i++)
+            for(var i = 0; i< loads.length ; i++)
             {
-                slips[i].self = "https://cs493a3.wm.r.appspot.com/slips/" + slips[i].id; 
+                loads[i].self = "https://cs493a4-329921.wm.r.appspot.com/loads/" + loads[i].id; 
             }
-            res.status(200).json(slips);
+            res.status(200).json(loads);
         });
 });
 
@@ -242,20 +233,20 @@ router.get('/boats/:id', function (req, res) {
             if (boat[0] === undefined || boat[0] === null) {
                 res.status(404).json({ 'Error': 'No boat with this boat_id exists' });
             } else {
-                boat[0].self = "https://cs493a3.wm.r.appspot.com/boats/" + boat[0].id; 
+                boat[0].self = "https://cs493a4-329921.wm.r.appspot.com/boats/" + boat[0].id; 
                 res.status(200).json(boat[0]);
             }
         });
 });
 
-router.get('/slips/:id', function (req, res) {
-    get_slip(req.params.id)
-        .then(slip => {
-            if (slip[0] === undefined || slip[0] === null) {
-                res.status(404).json({ 'Error': 'No slip with this slip_id exists' });
+router.get('/loads/:id', function (req, res) {
+    get_load(req.params.id)
+        .then(load => {
+            if (load[0] === undefined || load[0] === null) {
+                res.status(404).json({ 'Error': 'No load with this load_id exists' });
             } else {
-                slip[0].self = "https://cs493a3.wm.r.appspot.com/slips/" + slip[0].id; 
-                res.status(200).json(slip[0]);
+                load[0].self = "https://cs493a3.wm.r.appspot.com/loads/" + load[0].id; 
+                res.status(200).json(load[0]);
             }
         });
 });
