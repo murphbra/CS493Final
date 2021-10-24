@@ -1,5 +1,5 @@
 //Author: Brayden Murphy
-//CS 493 Assignment 3
+//CS 493 Assignment 4
 // Adapted from example code provided in course materials for CS 493 
 
 const express = require('express');
@@ -28,7 +28,7 @@ app.set('trust proxy', true);
 
 function post_boat(name, type, length) {
     var key = datastore.key(BOAT);
-    const new_boat = { "name": name, "type": type, "length": length };
+    const new_boat = { "name": name, "type": type, "length": length, "loads": [] };
     return datastore.save({ "key": key, "data": new_boat }).then(() => { 
         new_boat.id = key.id; 
         return new_boat });
@@ -132,7 +132,7 @@ router.get('/boats', function (req, res) {
 
             for(var i = 0; i< boats.length ; i++)
             {
-                boats[i].self = "https://cs493a3.wm.r.appspot.com/boats/" + boats[i].id; 
+                boats[i].self = "https://cs493a4-329921.wm.r.appspot.com/boats/" + boats[i].id; 
             }
             res.status(200).json(boats);
         });
@@ -165,7 +165,7 @@ router.post('/boats', function (req, res) {
     else 
     {
         post_boat(req.body.name, req.body.type, req.body.length).then(new_boat => { 
-            new_boat.self = "https://cs493a3.wm.r.appspot.com/boats/" + new_boat.id; 
+            new_boat.self = "https://cs493a4-329921.wm.r.appspot.com/boats/" + new_boat.id; 
             res.status(201).send(new_boat); 
         }); 
     }
