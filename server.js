@@ -12,7 +12,7 @@ const datastore = new Datastore();
 
 const BOAT = "Boat"; 
 
-const SLIP = "Slip"; 
+const LOAD = "Load"; 
 
 const router = express.Router();
 
@@ -34,7 +34,7 @@ function post_boat(name, type, length) {
         new_boat.id = key.id; 
         return new_boat });
 }
-
+/*
 function post_slip(number) {
     var key = datastore.key(SLIP);
     const new_slip = { "number": number, "current_boat": null };
@@ -42,6 +42,16 @@ function post_slip(number) {
         new_slip.id = key.id; 
         return new_slip });
 }
+*/
+function post_load(volume, content) {
+    var key = datastore.key(LOAD);
+    let creation_date = new Date().toLocaleDateString();        //based on code example at source: https://stackabuse.com/how-to-get-the-current-date-in-javascript/
+    const new_load = { "volume": volume, "content": content, "creation_date": creation_date };
+    return datastore.save({ "key": key, "data": new_load }).then(() => { 
+        new_load.id = key.id; 
+        return new_load });
+}
+
 /**
  * The function datastore.query returns an array, where the element at index 0
  * is itself an array. Each element in the array at element 0 is a JSON object
@@ -172,16 +182,20 @@ router.post('/boats', function (req, res) {
     }
 });
 
-router.post('/slips', function (req, res) {
-    if(req.body.number === undefined)
+router.post('/loads', function (req, res) {
+    if(req.body.volume === undefined)
     {
-        res.status(400).json({ 'Error': 'The request object is missing the required number' }).end(); 
+        res.status(400).json({ 'Error': 'The request object is missing at least one of the required attributes' }).end(); 
+    } 
+    if(req.body.content === undefined)
+    {
+        res.status(400).json({ 'Error': 'The request object is missing at least one of the required attributes' }).end(); 
     } 
     else 
     {
-        post_slip(req.body.number).then(new_slip => { 
-            new_slip.self = "https://cs493a3.wm.r.appspot.com/slips/" + new_slip.id; 
-            res.status(201).send(new_slip); 
+        post_load(req.body.volume, req.body.content).then(new_load => { 
+            new_load.self = "https://cs493a4-329921.wm.r.appspot.com/slips/" + new_load.id; 
+            res.status(201).send(new_load); 
         }); 
     }
 });
