@@ -316,7 +316,12 @@ router.delete('/boats/:boat_id/loads/:load_id', function (req, res) {
                         {
                             res.status(404).json({ 'Error': 'No boat with this boat_id has a load with this load_id' }).end(); 
                         }
-            
+
+                        else if (load[0].carrier === null)
+                        {
+                            res.status(404).json({ 'Error': 'No boat with this boat_id has a load with this load_id'}).end(); 
+                        }
+
                         else if (load[0].carrier.id != boat[0].id)
                         {
                             res.status(404).json({ 'Error': 'No boat with this boat_id has a load with this load_id'}).end(); 
