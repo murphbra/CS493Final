@@ -291,7 +291,7 @@ router.get('/loads/:id', function (req, res) {
             if (load[0] === undefined || load[0] === null) {
                 res.status(404).json({ 'Error': 'No load with this load_id exists' });
             } else {
-                load[0].self = "https://cs493a3.wm.r.appspot.com/loads/" + load[0].id; 
+                load[0].self = "https://cs493a4-329921.wm.r.appspot.com/loads/" + load[0].id; 
                 res.status(200).json(load[0]);
             }
         });
