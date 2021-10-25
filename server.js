@@ -342,7 +342,7 @@ router.delete('/boats/:boat_id/loads/:load_id', function (req, res) {
                             var content = load[0].content; 
                             var creation_date = load[0].creation_date;
                             var carrier = null; 
-                            assign_boat_to_load(req.params.load_id, volume, content, carrier, creation_date); 
+                            assign_boat_to_load(req.params.load_id, volume, carrier, content, creation_date); 
 
                             res.status(204).end(); 
                         }
