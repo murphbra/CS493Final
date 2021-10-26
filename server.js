@@ -75,7 +75,7 @@ function get_boats(req){
             }
 
             if(entities[1].moreResults !== Datastore.NO_MORE_RESULTS ){
-                results.next = req.protocol + "://" + req.get("host") + req.baseUrl + "?cursor=" + entities[1].endCursor;
+                results.next = "http://" + req.get("host") + req.baseUrl + "?cursor=" + entities[1].endCursor;
             }
 			return results;
 		});
@@ -102,7 +102,7 @@ function get_loads(req){
 
 
             if(entities[1].moreResults !== Datastore.NO_MORE_RESULTS ){
-                results.next = req.protocol + "://" + req.get("host") + req.baseUrl + "?cursor=" + entities[1].endCursor;
+                results.next = "http://" + req.get("host") + req.baseUrl + "?cursor=" + entities[1].endCursor;
             }
 			return results;
 		});
