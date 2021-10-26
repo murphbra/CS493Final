@@ -163,22 +163,24 @@ function delete_boat(id) {
 
 router.get('/boats', function (req, res) {
     const boats = get_boats(req).then((boats) => {
-
+            /*
             for(var i = 0; i< boats.length ; i++)
             {
                 boats[i].self = "https://cs493a4-329921.wm.r.appspot.com/boats/" + boats[i].id; 
             }
+            */
             res.status(200).json(boats);
         });
 });
 
 router.get('/loads', function (req, res) {
     const loads = get_loads(req).then((loads) => {
-
+            /*
             for(var i = 0; i< loads.length ; i++)
             {
                 loads[i].self = "https://cs493a4-329921.wm.r.appspot.com/loads/" + loads[i].id; 
             }
+            */ 
             res.status(200).json(loads);
         });
 });
