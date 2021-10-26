@@ -169,7 +169,7 @@ router.get('/boats/:boat_id/loads', function(req, res) {
                 res.status(404).json({ 'Error': 'No boat with this boat_id exists' });
             } else {
                 const return_array = new Object(); 
-                return_array.boat_loads = []; 
+                //return_array.boat_loads = []; 
                 const loads_array = boat[0].loads; 
                 for(i=0;i<loads_array.length;i++)
                 {
@@ -184,7 +184,8 @@ router.get('/boats/:boat_id/loads', function(req, res) {
                         return_obj.volume = load[0].volume; 
                         return_obj.creation_date = load[0].creation_date; 
                         */ 
-                        return_array.boat_loads.push(load[0]); 
+                        return_array.i = load[0]; 
+                        //return_array.boat_loads = return_array.bush_loads.push(load[0]); 
                     })
                 }
                 res.status(200).json(return_array);
