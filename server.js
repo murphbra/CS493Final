@@ -5,7 +5,7 @@
 const express = require('express');
 const app = express();
 
-const { Datastore } = require('@google-cloud/datastore');
+const Datastore = require('@google-cloud/datastore');
 const bodyParser = require('body-parser');
 
 const datastore = new Datastore();
@@ -74,7 +74,7 @@ function get_boats(req){
                 }
             }
 
-            if(entities[1].moreResults !== datastore.NO_MORE_RESULTS ){
+            if(entities[1].moreResults !== Datastore.NO_MORE_RESULTS ){
                 results.next = "https://cs493a4-329921.wm.r.appspot.com/boats/" + "?cursor=" + entities[1].endCursor;
             }
             else {
@@ -103,7 +103,7 @@ function get_loads(req){
                 }
             }
 
-            if(entities[1].moreResults !== datastore.NO_MORE_RESULTS ){
+            if(entities[1].moreResults !== Datastore.NO_MORE_RESULTS ){
                 results.next = "https://cs493a4-329921.wm.r.appspot.com/loads/" + "?cursor=" + entities[1].endCursor;
             }
             else {
