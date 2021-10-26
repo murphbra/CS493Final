@@ -47,19 +47,10 @@ function post_load(volume, content) {
         return new_load });
 }
 
-/*
-function get_boats(req) {
-    const q = datastore.createQuery(BOAT);
-    return datastore.runQuery(q).then((entities) => {
-        return entities[0].map(fromDatastore);
-    });
-}
-*/
 function get_boats(req){
     var q = datastore.createQuery(BOAT).limit(3);
     const results = {};
     if(Object.keys(req.query).includes("cursor")){
-        //prev = req.protocol + "://" + req.get("host") + req.baseUrl + "?cursor=" + req.query.cursor;
         q = q.start(req.query.cursor);
     }
 	return datastore.runQuery(q).then( (entities) => {
@@ -74,7 +65,7 @@ function get_boats(req){
                 }
             }
 
-            if(entities[1].moreResults != Datastore.NO_MORE_RESULTS ){
+            if(entities[1].moreResults !== Datastore.NO_MORE_RESULTS ){
                 results.next = "https://cs493a4-329921.wm.r.appspot.com/boats/" + "?cursor=" + entities[1].endCursor;
             }
             else {
@@ -88,7 +79,6 @@ function get_loads(req){
     var q = datastore.createQuery(LOAD).limit(3);
     const results = {};
     if(Object.keys(req.query).includes("cursor")){
-        //prev = req.protocol + "://" + req.get("host") + req.baseUrl + "?cursor=" + req.query.cursor;
         q = q.start(req.query.cursor);
     }
 	return datastore.runQuery(q).then( (entities) => {
@@ -103,7 +93,7 @@ function get_loads(req){
                 }
             }
 
-            if(entities[1].moreResults != Datastore.NO_MORE_RESULTS ){
+            if(entities[1].moreResults !== Datastore.NO_MORE_RESULTS ){
                 results.next = "https://cs493a4-329921.wm.r.appspot.com/loads/" + "?cursor=" + entities[1].endCursor;
             }
             else {
@@ -117,11 +107,8 @@ function get_boat(id) {
     const key = datastore.key([BOAT, parseInt(id, 10)]);
     return datastore.get(key).then((entity) => {
         if (entity[0] === undefined || entity[0] === null) {
-            // No entity found. Don't try to add the id attribute
             return entity;
         } else {
-            // Use Array.map to call the function fromDatastore. This function
-            // adds id attribute to every element in the array entity
             return entity.map(fromDatastore);
         }
     });
@@ -131,11 +118,8 @@ function get_load(id) {
     const key = datastore.key([LOAD, parseInt(id, 10)]);
     return datastore.get(key).then((entity) => {
         if (entity[0] === undefined || entity[0] === null) {
-            // No entity found. Don't try to add the id attribute
             return entity;
         } else {
-            // Use Array.map to call the function fromDatastore. This function
-            // adds id attribute to every element in the array entity
             return entity.map(fromDatastore);
         }
     });
@@ -168,24 +152,12 @@ function delete_boat(id) {
 
 router.get('/boats', function (req, res) {
     const boats = get_boats(req).then((boats) => {
-            /*
-            for(var i = 0; i< boats.length ; i++)
-            {
-                boats[i].self = "https://cs493a4-329921.wm.r.appspot.com/boats/" + boats[i].id; 
-            }
-            */
             res.status(200).json(boats);
         });
 });
 
 router.get('/loads', function (req, res) {
     const loads = get_loads(req).then((loads) => {
-            /*
-            for(var i = 0; i< loads.length ; i++)
-            {
-                loads[i].self = "https://cs493a4-329921.wm.r.appspot.com/loads/" + loads[i].id; 
-            }
-            */ 
             res.status(200).json(loads);
         });
 });
@@ -196,8 +168,6 @@ router.get('/boats/:boat_id/loads', function(req, res) {
             if (boat[0] === undefined || boat[0] === null) {
                 res.status(404).json({ 'Error': 'No boat with this boat_id exists' });
             } else {
-                //const return_array = new Object(); 
-                //return_array.boat_loads = []; 
                 const loads_array = boat[0].loads; 
                 for(i=0;i<loads_array.length;i++)
                 {
@@ -274,20 +244,16 @@ router.put('/boats/:boat_id/loads/:load_id', function (req, res) {
 
                         else
                         {
-                            //var slipNumber = slip[0].number; 
-                            //put_boat_in_slip(req.params.slip_id, req.params.boat_id, slipNumber); 
                             var name = boat[0].name;
                             var type = boat[0].type;
                             var length = boat[0].length; 
                             const load_array = boat[0].loads; 
-                            //var load_self = "https://cs493a4-329921.wm.r.appspot.com/loads/" + req.params.load_id;
                             load_array.push({"id": req.params.load_id});
                             assign_load_to_boat(req.params.boat_id, name, type, length, load_array); 
 
                             var volume = load[0].volume;
                             var content = load[0].content; 
                             var creation_date = load[0].creation_date;
-                            //var boat_self =  "https://cs493a4-329921.wm.r.appspot.com/boats/" + req.params.boat_id; 
                             const carrier = {"id": req.params.boat_id, "name": name}; 
                             assign_boat_to_load(req.params.load_id, volume, carrier, content, creation_date); 
                             res.status(204).end(); 
@@ -305,7 +271,6 @@ router.get('/boats/:id', function (req, res) {
                 res.status(404).json({ 'Error': 'No boat with this boat_id exists' });
             } else {
                 boat[0].self = "https://cs493a4-329921.wm.r.appspot.com/boats/" + boat[0].id; 
-                //const loads_array = boat[0].loads;
                 for(i=0;i<boat[0].loads.length;i++)
                 {
                     boat[0].loads[i].self = "https://cs493a4-329921.wm.r.appspot.com/loads/" + boat[0].loads[i].id ;
@@ -396,7 +361,6 @@ router.delete('/loads/:load_id', function(req, res) {
         {
             if (load[0] === undefined || load[0] === null) 
             {
-                // The 0th element is undefined. This means there is no lodging with this id
                 res.status(404).json({ 'Error': 'No load with this load_Id exists' }).end(); 
             }
             else
@@ -428,7 +392,6 @@ router.delete('/boats/:boat_id', function(req, res) {
         {
             if (boat[0] === undefined || boat[0] === null) 
             {
-                // The 0th element is undefined. This means there is no lodging with this id
                 res.status(404).json({ 'Error': 'No boat with this boat_id exists' }).end(); 
             }
             else
