@@ -5,7 +5,7 @@
 const express = require('express');
 const app = express();
 
-const Datastore = require('@google-cloud/datastore');
+const {Datastore} = require('@google-cloud/datastore');
 const bodyParser = require('body-parser');
 
 const datastore = new Datastore();
