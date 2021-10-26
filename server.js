@@ -168,27 +168,14 @@ router.get('/boats/:boat_id/loads', function(req, res) {
             if (boat[0] === undefined || boat[0] === null) {
                 res.status(404).json({ 'Error': 'No boat with this boat_id exists' });
             } else {
-                const return_array = new Object(); 
+                //const return_array = new Object(); 
                 //return_array.boat_loads = []; 
                 const loads_array = boat[0].loads; 
                 for(i=0;i<loads_array.length;i++)
                 {
-                    get_load(loads_array[i].id)
-                    .then ( load => {
-                        /*
-                        var return_obj = new Object();
-                        return_obj.id = load[0].id; 
-                        return_obj.self = "https://cs493a4-329921.wm.r.appspot.com/loads/" + loads[0].id; 
-                        return_obj.content = load[0].content;
-                        return_obj.carrier = load[0].carrier; 
-                        return_obj.volume = load[0].volume; 
-                        return_obj.creation_date = load[0].creation_date; 
-                        */ 
-                        return_array.i = load[0]; 
-                        //return_array.boat_loads = return_array.bush_loads.push(load[0]); 
-                    })
+                    loads_array[i].self = "https://cs493a4-329921.wm.r.appspot.com/loads/" + loads_array[i].id;
                 }
-                res.status(200).json(return_array);
+                res.status(200).json(loads_array);
             }
         });
 });
@@ -265,15 +252,15 @@ router.put('/boats/:boat_id/loads/:load_id', function (req, res) {
                             var type = boat[0].type;
                             var length = boat[0].length; 
                             const load_array = boat[0].loads; 
-                            var load_self = "https://cs493a4-329921.wm.r.appspot.com/loads/" + req.params.load_id;
-                            load_array.push({"id": req.params.load_id, "self": load_self});
+                            //var load_self = "https://cs493a4-329921.wm.r.appspot.com/loads/" + req.params.load_id;
+                            load_array.push({"id": req.params.load_id});
                             assign_load_to_boat(req.params.boat_id, name, type, length, load_array); 
 
                             var volume = load[0].volume;
                             var content = load[0].content; 
                             var creation_date = load[0].creation_date;
-                            var boat_self =  "https://cs493a4-329921.wm.r.appspot.com/boats/" + req.params.boat_id; 
-                            const carrier = {"id": req.params.boat_id, "name": name, "self": boat_self}; 
+                            //var boat_self =  "https://cs493a4-329921.wm.r.appspot.com/boats/" + req.params.boat_id; 
+                            const carrier = {"id": req.params.boat_id, "name": name}; 
                             assign_boat_to_load(req.params.load_id, volume, carrier, content, creation_date); 
                             res.status(204).end(); 
                         }
