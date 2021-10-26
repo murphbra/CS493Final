@@ -64,6 +64,16 @@ function get_boats(req){
     }
 	return datastore.runQuery(q).then( (entities) => {
             results.items = entities[0].map(fromDatastore);
+
+            for(i=0;i<results.items.length;i++)
+            {
+                results.items[i].self = "https://cs493a4-329921.wm.r.appspot.com/boats/" + results.items[i].id;
+                if(results.items[i].loads.length > 0)
+                {
+                    results.items[i].loads.self = "https://cs493a4-329921.wm.r.appspot.com/loads/" + results.items[i].loads.id; 
+                }
+            }
+
             if(entities[1].moreResults !== Datastore.NO_MORE_RESULTS ){
                 results.next = req.protocol + "://" + req.get("host") + req.baseUrl + "?cursor=" + entities[1].endCursor;
             }
@@ -80,6 +90,17 @@ function get_loads(req){
     }
 	return datastore.runQuery(q).then( (entities) => {
             results.items = entities[0].map(fromDatastore);
+
+            for(i=0;i<results.items.length;i++)
+            {
+                results.items[i].self = "https://cs493a4-329921.wm.r.appspot.com/loads/" + results.items[i].id;
+                if(results.items[i].carrier != null)
+                {
+                    results.items[i].carrier.self = "https://cs493a4-329921.wm.r.appspot.com/boats/" + results.items[i].carrier.id; 
+                }
+            }
+
+
             if(entities[1].moreResults !== Datastore.NO_MORE_RESULTS ){
                 results.next = req.protocol + "://" + req.get("host") + req.baseUrl + "?cursor=" + entities[1].endCursor;
             }
