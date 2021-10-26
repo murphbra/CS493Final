@@ -277,7 +277,7 @@ router.get('/boats/:id', function (req, res) {
                 res.status(404).json({ 'Error': 'No boat with this boat_id exists' });
             } else {
                 boat[0].self = "https://cs493a4-329921.wm.r.appspot.com/boats/" + boat[0].id; 
-                const loads_array = boat[0].loads;
+                //const loads_array = boat[0].loads;
                 for(i=0;i<boat[0].loads.length;i++)
                 {
                     boat[0].loads[i].self = "https://cs493a4-329921.wm.r.appspot.com/loads/" + boat[0].loads[i].id ;
