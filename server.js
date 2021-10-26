@@ -168,14 +168,23 @@ router.get('/boats/:boat_id/loads', function(req, res) {
             if (boat[0] === undefined || boat[0] === null) {
                 res.status(404).json({ 'Error': 'No boat with this boat_id exists' });
             } else {
-                const return_array = []; 
+                const return_array = new Object(); 
+                return_array.boat_loads = []; 
                 const loads_array = boat[0].loads; 
                 for(i=0;i<loads_array.length;i++)
                 {
                     get_load(loads_array[i].id)
                     .then ( load => {
-                        load[0].self = "https://cs493a4-329921.wm.r.appspot.com/loads/" + loads[0].id; 
-                        return_array.push(load[0]); 
+                        /*
+                        var return_obj = new Object();
+                        return_obj.id = load[0].id; 
+                        return_obj.self = "https://cs493a4-329921.wm.r.appspot.com/loads/" + loads[0].id; 
+                        return_obj.content = load[0].content;
+                        return_obj.carrier = load[0].carrier; 
+                        return_obj.volume = load[0].volume; 
+                        return_obj.creation_date = load[0].creation_date; 
+                        */ 
+                        return_array.boat_loads.push(load[0]); 
                     })
                 }
                 res.status(200).json(return_array);
