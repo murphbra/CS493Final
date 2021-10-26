@@ -77,6 +77,9 @@ function get_boats(req){
             if(entities[1].moreResults !== Datastore.NO_MORE_RESULTS ){
                 results.next = "https://cs493a4-329921.wm.r.appspot.com/boats/" + "?cursor=" + entities[1].endCursor;
             }
+            else {
+                results.next = "No more results"; 
+            }
 			return results;
 		});
 }
@@ -103,6 +106,9 @@ function get_loads(req){
 
             if(entities[1].moreResults !== Datastore.NO_MORE_RESULTS ){
                 results.next = "https://cs493a4-329921.wm.r.appspot.com/loads/" + "?cursor=" + entities[1].endCursor;
+            }
+            else {
+                results.next = "No more results"; 
             }
 			return results;
 		});
