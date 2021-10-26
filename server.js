@@ -68,9 +68,9 @@ function get_boats(req){
             for(i=0;i<results.items.length;i++)
             {
                 results.items[i].self = "https://cs493a4-329921.wm.r.appspot.com/boats/" + results.items[i].id;
-                if(results.items[i].loads.length > 0)
+                for(x=0;x<results.items[i].loads.length;x++)
                 {
-                    results.items[i].loads.self = "https://cs493a4-329921.wm.r.appspot.com/loads/" + results.items[i].loads.id; 
+                    results.items[i].loads[x].self = "https://cs493a4-329921.wm.r.appspot.com/loads/" + results.items[i].loads[x].id; 
                 }
             }
 
