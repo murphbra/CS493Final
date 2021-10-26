@@ -152,7 +152,7 @@ router.get('/boats', function (req, res) {
 });
 
 router.get('/loads', function (req, res) {
-    const loads = get_loads().then((loads) => {
+    const loads = get_loads(req).then((loads) => {
 
             for(var i = 0; i< loads.length ; i++)
             {
