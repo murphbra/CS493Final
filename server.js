@@ -319,8 +319,8 @@ router.put('/loads/:load_id', function (req, res) {
     else 
     {
         get_load(req.params.load_id).then((load) => {
-            var carrier = load.carrier; 
-            var creation_date = load.creation_date; 
+            var carrier = load[0].carrier; 
+            var creation_date = load[0].creation_date; 
             put_load(req.body.volume, carrier, req.body.content, creation_date).then(new_load => { 
                 new_load.self = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + new_load.id; 
                 res.status(201).send(new_load); 
