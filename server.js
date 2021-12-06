@@ -337,9 +337,25 @@ router.patch('/loads/:load_id', function (req, res) {
     else 
     {
         get_load(req.params.load_id).then((load) => {
+            if(req.body.volume === undefined)
+            {
+                var volume = load[0].volume;
+            }
+            else
+            {
+                var volume = req.body.volume;
+            }
+            if(req.body.content === undefined)
+            {
+                var content = load[0].content; 
+            }
+            else
+            {
+                var content = req.body.content; 
+            }
             var carrier = load[0].carrier; 
             var creation_date = load[0].creation_date; 
-            put_load(req.params.load_id, req.body.volume, carrier, req.body.content, creation_date).then(new_load => { 
+            put_load(req.params.load_id, volume, carrier, content, creation_date).then(new_load => { 
                 new_load.self = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + new_load.id; 
                 res.status(201).send(new_load); 
             }); 
