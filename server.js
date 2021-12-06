@@ -126,11 +126,7 @@ function get_loads_count(){
 	return datastore.runQuery(q).then( (entities) => {
 			return entities[0].map(fromDatastore);
 		}).then((total_entities) => {
-            var count = 0; 
-            for(var i = 0; i < total_entities.length; i++){
-                count++ 
-            }
-            return count; 
+            return total_entities[0].length; 
         })
 }
 
