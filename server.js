@@ -7,16 +7,21 @@ const app = express();
 const json2html = require('json-to-html');
 const {Datastore} = require('@google-cloud/datastore');
 const bodyParser = require('body-parser');
+require('dotenv').config(); 
 const request = require('request');
 const datastore = new Datastore();
 const jwt = require('express-jwt');
 const jwksRsa = require('jwks-rsa');
+
 const BOAT = "Boat";
+const LOAD = "Load"; 
+const USER = "User"; 
+
 const router = express.Router();
 const login = express.Router();
-const CLIENT_ID = 'l31VqXyaQzHDIwQE7sEhXHCVfbRYj6vG';
-const CLIENT_SECRET = 'AXtJLEs2rrotNs29BP8TkkDpfZAxl9-XsH_ghwkZScCHtNS3p-MMMylRdGG7CUrz';
-const DOMAIN = '493-assignment-7.us.auth0.com';
+const CLIENT_ID = process.env.AUTH0_CLIENT_ID;
+const CLIENT_SECRET = process.env.AUTH0_CLIENT_SECRET;
+const DOMAIN = process.env.AUTH0_DOMAIN;
 
 function fromDatastore(item){
     item.id = item[Datastore.KEY].id;
@@ -38,17 +43,25 @@ const checkJwt = jwt({
 
 app.set('trust proxy', true);
 
-var exphbs = require('express-handlebars');
-
-app.engine('handlebars', engine());
-app.set('view engine', 'handlebars'); 
-/*
-app.use(express.json()); 
-app.use(express.urlencoded({extended:true}));
-app.set('view engine', '.hbs'); 
-*/
-
 /* ------------- Begin Lodging Model Functions ------------- */
+function post_user(name){
+    var key = datastore.key(USER);
+	const new_user = {"name": name};
+	return datastore.save({"key":key, "data":new_user}).then(() => {
+        new_user.id = key.id; 
+        return new_user});
+}
+
+function get_users() {
+    const q = datastore.createQuery(USER);
+    return datastore.runQuery(q).then((entities) => {
+        // Use Array.map to call the function fromDatastore. This function
+        // adds id attribute to every element in the array at element 0 of
+        // the variable entities
+        return entities[0].map(fromDatastore);
+    });
+}
+
 function post_boat(name, type, length, public, owner){
     var key = datastore.key(BOAT);
 	const new_boat = {"name": name, "type": type, "length": length, "public": public, "owner":owner};
@@ -139,8 +152,14 @@ function errorJwtGet(){
 /* ------------- End Model Functions ------------- */
 
 /* ------------- Begin Controller Functions ------------- */
-router.get('/', function(req, res) {
-    res.send("successful"); 
+router.get('/users', function(req, res) {
+    const users = get_users().then((users) => {
+        for(var i = 0; i<users.length; i++)
+        {
+            users[i].self = "https://cs493final-334205.uw.r.appspot.com" + users[i].id; 
+        }
+        res.status(200).json(users); 
+    })
 }); 
 
 router.get('/boats', errorJwtGet(), function(req, res){
@@ -196,10 +215,27 @@ login.post('/', function(req, res){
         if (error){
             res.status(500).send(error);
         } else {
-            res.send(body);
+            var newUser = true; 
+            get_users().then((users) => {
+                for(var i=0; i < users.length; i++)
+                {
+                    if(users[i].name == username)
+                    {
+                        newUser = false; 
+                    }
+                }
+                return newUser 
+            }).then( (newUser) => {
+                if(newUser)
+                {
+                    post_user(username); 
+                }
+            }).then( () => {
+                res.send(body); 
+            }); 
+            //res.send(body);
         }
     });
-
 });
 
 /* ------------- End Controller Functions ------------- */
