@@ -19,6 +19,7 @@ const jwksRsa = require('jwks-rsa');
 
 const BOAT = "Boat";
 const USER = "User"; 
+const LOAD = "Load"; 
 
 const router = express.Router();
 const login = express.Router();
@@ -68,7 +69,7 @@ function get_users() {
 
 function post_boat(name, type, length, public, owner){
     var key = datastore.key(BOAT);
-	const new_boat = {"name": name, "type": type, "length": length, "public": public, "owner":owner};
+	const new_boat = {"name": name, "type": type, "length": length, "owner":owner};
 	return datastore.save({"key":key, "data":new_boat}).then(() => {
         new_boat.id = key.id; 
         return new_boat});
@@ -78,20 +79,6 @@ function get_boats(owner){
 	const q = datastore.createQuery(BOAT);
 	return datastore.runQuery(q).then( (entities) => {
 			return entities[0].map(fromDatastore).filter( item => item.owner === owner );
-		});
-}
-
-function get_boats_public(){
-	const q = datastore.createQuery(BOAT);
-	return datastore.runQuery(q).then( (entities) => {
-			return entities[0].map(fromDatastore).filter ( item => item.public === true);
-		});
-}
-
-function get_boats_public_owner(owner){
-	const q = datastore.createQuery(BOAT);
-	return datastore.runQuery(q).then( (entities) => {
-			return entities[0].map(fromDatastore).filter ( item => item.public === true).filter(item => item.owner === owner);
 		});
 }
 
@@ -112,6 +99,71 @@ function get_boat(id) {
 function delete_boat(id){
     const key = datastore.key([BOAT, parseInt(id, 10)]);
     return datastore.delete(key); 
+}
+
+function post_load(volume, content) {
+    var key = datastore.key(LOAD);
+    let creation_date = new Date().toLocaleDateString();        //based on code example at source: https://stackabuse.com/how-to-get-the-current-date-in-javascript/
+    const new_load = { "volume": volume, "carrier": null, "content": content, "creation_date": creation_date };
+    return datastore.save({ "key": key, "data": new_load }).then(() => { 
+        new_load.id = key.id; 
+        return new_load });
+}
+
+function get_load(id) {
+    const key = datastore.key([LOAD, parseInt(id, 10)]);
+    return datastore.get(key).then((entity) => {
+        if (entity[0] === undefined || entity[0] === null) {
+            return entity;
+        } else {
+            return entity.map(fromDatastore);
+        }
+    });
+}
+
+function get_loads(req){
+    var q = datastore.createQuery(LOAD).limit(5);
+    const results = {};
+    if(Object.keys(req.query).includes("cursor")){
+        q = q.start(req.query.cursor);
+    }
+	return datastore.runQuery(q).then( (entities) => {
+            results.items = entities[0].map(fromDatastore);
+
+            for(i=0;i<results.items.length;i++)
+            {
+                results.items[i].self = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + results.items[i].id;
+                if(results.items[i].carrier != null)
+                {
+                    results.items[i].carrier.self = "https://portfolioproject-334304.wm.r.appspot.com/boats/" + results.items[i].carrier.id; 
+                }
+            }
+
+            if(entities[1].moreResults !== Datastore.NO_MORE_RESULTS ){
+                results.next = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + "?cursor=" + entities[1].endCursor;
+            }
+            else {
+                results.next = "No more results"; 
+            }
+			return results;
+		});
+}
+
+function delete_load(id) {
+    const key = datastore.key([LOAD, parseInt(id, 10)]);
+    return datastore.delete(key); 
+}
+
+function assign_load_to_boat(boat_id, name, type, length, load_array) {
+    const key = datastore.key([BOAT, parseInt(boat_id, 10)]);
+    const boat = {"name": name, "type": type, "length": length, "loads": load_array}; 
+    return datastore.save({ "key": key, "data": boat });
+}
+
+function assign_boat_to_load(load_id, volume, carrier, content, creation_date) {
+    const key = datastore.key([LOAD, parseInt(load_id, 10)]);
+    const load = { "volume": volume, "carrier": carrier, "content": content, "creation_date": creation_date}; 
+    return datastore.save({ "key": key, "data": load });
 }
 
 function errorJwtPost(){
@@ -205,6 +257,62 @@ router.delete('/boats/:boat_id', errorJwtPost(), function(req, res){
         }
     }); 
 }); 
+
+router.post('/loads', function (req, res) {
+    if(req.body.volume === undefined)
+    {
+        res.status(400).json({ 'Error': 'The request object is missing at least one of the required attributes' }).end(); 
+    } 
+    if(req.body.content === undefined)
+    {
+        res.status(400).json({ 'Error': 'The request object is missing at least one of the required attributes' }).end(); 
+    } 
+    else 
+    {
+        post_load(req.body.volume, req.body.content).then(new_load => { 
+            new_load.self = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + new_load.id; 
+            res.status(201).send(new_load); 
+        }); 
+    }
+});
+
+router.get('/loads', function (req, res) {
+    const loads = get_loads(req).then((loads) => {
+            res.status(200).json(loads);
+        });
+});
+
+router.delete('/loads/:load_id', function(req, res) {
+    get_load(req.params.load_id)
+    .then (load =>
+        {
+            if (load[0] === undefined || load[0] === null) 
+            {
+                res.status(404).json({ 'Error': 'No load with this load_Id exists' }).end(); 
+            }
+            else
+            {
+                get_boat(load[0].carrier.id)
+                .then (boat => {
+                    var name = boat[0].name;
+                    var type = boat[0].type;
+                    var length = boat[0].length; 
+                    const load_array = boat[0].loads; 
+                    for(i=0; i<load_array.length; i++)
+                        {
+                            if(load_array[i].id == req.params.load_id)
+                            {
+                                load_array.splice(i, 1); 
+                            }
+                        }
+                        assign_load_to_boat(boat[0].id, name, type, length, load_array); 
+                })
+                delete_load(req.params.load_id).then(res.status(204).end()); 
+            }
+        })
+
+}); 
+
 
 login.post('/', function(req, res){
     const username = req.body.username;
