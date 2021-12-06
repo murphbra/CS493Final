@@ -131,7 +131,8 @@ function get_loads_count(){
 function get_loads(req){
     var q = datastore.createQuery(LOAD).limit(5);
     const results = {};
-    results.total_items_in_collection = get_loads_count(); 
+    const total = get_loads_count(); 
+    results.total_items_in_collection = total.length; 
     if(Object.keys(req.query).includes("cursor")){
         q = q.start(req.query.cursor);
     }
