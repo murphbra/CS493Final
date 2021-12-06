@@ -480,7 +480,7 @@ router.delete('/boats/clear', function(req, res) {
     })
 }); 
 
-router.delete('boats/:boat_id', function(req,res){
+router.delete('/boats/:boat_id', function(req,res){
     delete_boat(req.params.boat_id); 
 });
 
