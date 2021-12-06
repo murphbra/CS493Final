@@ -1,5 +1,5 @@
 //Author: Brayden Murphy
-//CS 493 Assignment 7
+//CS 493 Portfolio Project 
 // Adapted from example code provided in course materials for CS 493 
 
 const express = require('express');
@@ -153,9 +153,10 @@ function errorJwtGet(){
 
 /* ------------- Begin Controller Functions ------------- */
 router.get('/', function (req, res) {
-    res.send("successful"); 
+    res.status(200).json({"Success": "Get request succeeded"}); 
 }); 
 
+/*
 router.get('/users', function(req, res) {
     const users = get_users().then((users) => {
         for(var i = 0; i<users.length; i++)
@@ -165,6 +166,7 @@ router.get('/users', function(req, res) {
         res.status(200).json(users); 
     })
 }); 
+*/
 
 router.get('/boats', errorJwtGet(), function(req, res){
         get_boats(req.user.sub)
@@ -202,6 +204,7 @@ router.delete('/boats/:boat_id', errorJwtPost(), function(req, res){
     }); 
 }); 
 
+/*
 login.post('/', function(req, res){
     const username = req.body.username;
     const password = req.body.password;
@@ -241,6 +244,8 @@ login.post('/', function(req, res){
         }
     });
 });
+
+*/ 
 
 /* ------------- End Controller Functions ------------- */
 
