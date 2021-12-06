@@ -137,6 +137,9 @@ function errorJwtGet(){
 /* ------------- End Model Functions ------------- */
 
 /* ------------- Begin Controller Functions ------------- */
+router.get('/', function(req, res) {
+    res.send("Success"); 
+}); 
 
 router.get('/boats', errorJwtGet(), function(req, res){
         get_boats(req.user.sub)
