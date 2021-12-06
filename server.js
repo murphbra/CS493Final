@@ -121,9 +121,17 @@ function get_load(id) {
     });
 }
 
+function get_loads_count(){
+	const q = datastore.createQuery(BOAT);
+	return datastore.runQuery(q).then( (entities) => {
+			return entities[0].map(fromDatastore).length;
+		});
+}
+
 function get_loads(req){
     var q = datastore.createQuery(LOAD).limit(5);
     const results = {};
+    results.total_items_in_collection = get_loads_count(); 
     if(Object.keys(req.query).includes("cursor")){
         q = q.start(req.query.cursor);
     }
