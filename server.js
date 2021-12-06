@@ -270,7 +270,7 @@ router.post('/loads', function (req, res) {
     else 
     {
         post_load(req.body.volume, req.body.content).then(new_load => { 
-            new_load.self = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + new_load.id; 
+            new_lDelad.self = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + new_load.id; 
             res.status(201).send(new_load); 
         }); 
     }
@@ -292,21 +292,24 @@ router.delete('/loads/:load_id', function(req, res) {
             }
             else
             {
-                get_boat(load[0].carrier.id)
-                .then (boat => {
-                    var name = boat[0].name;
-                    var type = boat[0].type;
-                    var length = boat[0].length; 
-                    const load_array = boat[0].loads; 
-                    for(i=0; i<load_array.length; i++)
-                        {
-                            if(load_array[i].id == req.params.load_id)
+                if(load[0].carrier !== null)
+                {
+                    get_boat(load[0].carrier.id)
+                    .then (boat => {
+                        var name = boat[0].name;
+                        var type = boat[0].type;
+                        var length = boat[0].length; 
+                        const load_array = boat[0].loads; 
+                        for(i=0; i<load_array.length; i++)
                             {
-                                load_array.splice(i, 1); 
+                                if(load_array[i].id == req.params.load_id)
+                                {
+                                    load_array.splice(i, 1); 
+                                }
                             }
-                        }
-                        assign_load_to_boat(boat[0].id, name, type, length, load_array); 
-                })
+                            assign_load_to_boat(boat[0].id, name, type, length, load_array); 
+                    })
+                }
                 delete_load(req.params.load_id).then(res.status(204).end()); 
             }
         })
