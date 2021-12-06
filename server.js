@@ -213,10 +213,27 @@ login.post('/', function(req, res){
         if (error){
             res.status(500).send(error);
         } else {
-            res.send(body);
+            var newUser = true; 
+            get_users().then((users) => {
+                for(var i=0; i < users.length; i++)
+                {
+                    if(users[i].name == username)
+                    {
+                        newUser = false; 
+                    }
+                }
+                return newUser 
+            }).then( (newUser) => {
+                if(newUser)
+                {
+                    post_user(username); 
+                }
+            }).then( () => {
+                res.send(body); 
+            }); 
+            //res.send(body);
         }
     });
-
 });
 
 /* ------------- End Controller Functions ------------- */
