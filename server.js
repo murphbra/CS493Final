@@ -4,29 +4,19 @@
 
 const express = require('express');
 const app = express();
-
 const json2html = require('json-to-html');
-
 const {Datastore} = require('@google-cloud/datastore');
-
 const bodyParser = require('body-parser');
 const request = require('request');
-
 const datastore = new Datastore();
-
 const jwt = require('express-jwt');
 const jwksRsa = require('jwks-rsa');
-
 const BOAT = "Boat";
-
 const router = express.Router();
 const login = express.Router();
-
 const CLIENT_ID = 'l31VqXyaQzHDIwQE7sEhXHCVfbRYj6vG';
 const CLIENT_SECRET = 'AXtJLEs2rrotNs29BP8TkkDpfZAxl9-XsH_ghwkZScCHtNS3p-MMMylRdGG7CUrz';
 const DOMAIN = '493-assignment-7.us.auth0.com';
-
-app.use(bodyParser.json());
 
 function fromDatastore(item){
     item.id = item[Datastore.KEY].id;
@@ -46,7 +36,15 @@ const checkJwt = jwt({
     algorithms: ['RS256']
   });
 
+  app.set('trust proxy', true);
 
+  var exphbs = require('express-handlebars');
+  app.engine('.hbs', exphbs({                     
+      extname: ".hbs"
+  }));
+  app.use(express.json()); 
+  app.use(express.urlencoded({extended:true}));
+  app.set('view engine', '.hbs'); 
 
 /* ------------- Begin Lodging Model Functions ------------- */
 function post_boat(name, type, length, public, owner){
