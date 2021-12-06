@@ -36,15 +36,14 @@ const checkJwt = jwt({
     algorithms: ['RS256']
   });
 
-  app.set('trust proxy', true);
-
-  var exphbs = require('express-handlebars');
-  app.engine('.hbs', exphbs({                     
-      extname: ".hbs"
-  }));
-  app.use(express.json()); 
-  app.use(express.urlencoded({extended:true}));
-  app.set('view engine', '.hbs'); 
+app.set('trust proxy', true);
+var exphbs = require('express-handlebars');
+app.engine('.hbs', exphbs({                     
+    extname: ".hbs"
+}));
+app.use(express.json()); 
+app.use(express.urlencoded({extended:true}));
+app.set('view engine', '.hbs'); 
 
 /* ------------- Begin Lodging Model Functions ------------- */
 function post_boat(name, type, length, public, owner){
