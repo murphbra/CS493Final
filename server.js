@@ -87,7 +87,7 @@ function get_boats(owner){
 function get_boats_by_owner(owner_name, req){
     const results = {};
     //results.total_items_in_collection = 5; 
-    var q = datastore.createQuery(BOAT).filter('owner', '=', owner_name);
+    var q = datastore.createQuery(BOAT).filter('owner', '=', owner_name).limit(5);
     if(Object.keys(req.query).includes("cursor")){
         q = q.start(req.query.cursor);
     }
@@ -119,6 +119,13 @@ function get_boats_by_owner(owner_name, req){
 
 function get_boats_count(){
 	const q = datastore.createQuery(BOAT);
+	return datastore.runQuery(q).then( (entities) => {
+			return entities[0].map(fromDatastore);
+		}); 
+}
+
+function get_boats_filtered(owner_name){
+	const q = datastore.createQuery(BOAT).filter('owner', '=', owner_name);
 	return datastore.runQuery(q).then( (entities) => {
 			return entities[0].map(fromDatastore);
 		}); 
@@ -308,7 +315,7 @@ router.get('/boats/all', function (req, res) {
 
 router.get('/boats', errorJwtPost(), function(req, res) {
     const boats = get_boats_by_owner(req.user.name, req).then((boats) => {
-        get_boats_count().then((total) => {
+        get_boats_filtered(req.user.name).then((total) => {
             boats.total_items_in_collection = total.length; 
             res.status(200).json(boats);
         })
