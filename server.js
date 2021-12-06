@@ -126,7 +126,7 @@ function get_loads_count(){
 	return datastore.runQuery(q).then( (entities) => {
 			return entities[0].map(fromDatastore);
 		}).then((total_entities) => {
-            return total_entities[0].length; 
+            return total_entities[0]; 
         })
 }
 
@@ -134,6 +134,7 @@ function get_loads(req){
     const results = {};
     const total = get_loads_count(); 
     results.total_items_in_collection = total; 
+
     var q = datastore.createQuery(LOAD).limit(5);
     if(Object.keys(req.query).includes("cursor")){
         q = q.start(req.query.cursor);
