@@ -124,7 +124,7 @@ function get_load(id) {
 function get_loads_count(){
 	const q = datastore.createQuery(BOAT);
 	return datastore.runQuery(q).then( (entities) => {
-			return entities[0].map(fromDatastore).length;
+			return entities[0].map(fromDatastore);
 		});
 }
 
