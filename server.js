@@ -87,7 +87,7 @@ function get_boats(owner){
 function get_boats_by_owner(name, req){
     const results = {};
     //results.total_items_in_collection = 5; 
-    var q = datastore.createQuery(BOAT).limit(5).filter( item => item.name === name);
+    var q = datastore.createQuery(BOAT).filter( item => item.name === name).limit(5);
     if(Object.keys(req.query).includes("cursor")){
         q = q.start(req.query.cursor);
     }
