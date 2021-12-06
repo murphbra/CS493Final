@@ -122,17 +122,17 @@ function get_load(id) {
 }
 
 function get_loads_count(){
-	const q = datastore.createQuery(BOAT);
+	const q = datastore.createQuery(LOAD);
 	return datastore.runQuery(q).then( (entities) => {
 			return entities[0].map(fromDatastore);
 		});
 }
 
 function get_loads(req){
-    var q = datastore.createQuery(LOAD).limit(5);
     const results = {};
     const total = get_loads_count(); 
-    results.total_items_in_collection = total[0]; 
+    results.total_items_in_collection = total.length; 
+    var q = datastore.createQuery(LOAD).limit(5);
     if(Object.keys(req.query).includes("cursor")){
         q = q.start(req.query.cursor);
     }
