@@ -44,6 +44,7 @@ const checkJwt = jwt({
 app.set('trust proxy', true);
 
 /* ------------- Begin Lodging Model Functions ------------- */
+/*
 function post_user(name){
     var key = datastore.key(USER);
 	const new_user = {"name": name};
@@ -61,6 +62,7 @@ function get_users() {
         return entities[0].map(fromDatastore);
     });
 }
+*/
 
 function post_boat(name, type, length, public, owner){
     var key = datastore.key(BOAT);
