@@ -7,7 +7,7 @@ const app = express();
 const json2html = require('json-to-html');
 const {Datastore} = require('@google-cloud/datastore');
 const bodyParser = require('body-parser');
-require('dotenv').config(); 
+//require('dotenv').config(); 
 const request = require('request');
 const datastore = new Datastore();
 const jwt = require('express-jwt');
@@ -19,9 +19,12 @@ const USER = "User";
 
 const router = express.Router();
 const login = express.Router();
+
+/*
 const CLIENT_ID = process.env.AUTH0_CLIENT_ID;
 const CLIENT_SECRET = process.env.AUTH0_CLIENT_SECRET;
 const DOMAIN = process.env.AUTH0_DOMAIN;
+*/
 
 function fromDatastore(item){
     item.id = item[Datastore.KEY].id;
