@@ -152,6 +152,10 @@ function errorJwtGet(){
 /* ------------- End Model Functions ------------- */
 
 /* ------------- Begin Controller Functions ------------- */
+router.get('/', function (req, res) {
+    res.send("successful"); 
+}); 
+
 router.get('/users', function(req, res) {
     const users = get_users().then((users) => {
         for(var i = 0; i<users.length; i++)
