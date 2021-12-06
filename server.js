@@ -40,10 +40,8 @@ app.set('trust proxy', true);
 
 var exphbs = require('express-handlebars');
 
-app.engine('.hbs', exphbs({                     
-    extname: ".hbs"
-}));
-app.set('view engine', '.hbs'); 
+app.engine('handlebars', engine());
+app.set('view engine', 'handlebars'); 
 /*
 app.use(express.json()); 
 app.use(express.urlencoded({extended:true}));
