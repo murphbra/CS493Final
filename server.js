@@ -329,21 +329,21 @@ router.put('/loads/:load_id', function (req, res) {
     }
 });
 
-router.patch('/loads', function (req, res) {
-    if(req.body.volume === undefined)
+router.patch('/loads/:load_id', function (req, res) {
+    if(req.body.volume === undefined && req.body.content === undefined)
     {
-        res.status(400).json({ 'Error': 'The request object is missing at least one of the required attributes' }).end(); 
-    } 
-    if(req.body.content === undefined)
-    {
-        res.status(400).json({ 'Error': 'The request object is missing at least one of the required attributes' }).end(); 
+        res.status(400).json({ 'Error': 'The request object does not contain any relevant attributes' }).end(); 
     } 
     else 
     {
-        patch_load(req.body.volume, req.body.content).then(new_load => { 
-            new_load.self = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + new_load.id; 
-            res.status(201).send(new_load); 
-        }); 
+        get_load(req.params.load_id).then((load) => {
+            var carrier = load[0].carrier; 
+            var creation_date = load[0].creation_date; 
+            put_load(req.params.load_id, req.body.volume, carrier, req.body.content, creation_date).then(new_load => { 
+                new_load.self = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + new_load.id; 
+                res.status(201).send(new_load); 
+            }); 
+        })
     }
 });
 
