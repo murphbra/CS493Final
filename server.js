@@ -6,7 +6,7 @@ const express = require('express');
 const app = express();
 
 const json2html = require('json-to-html');
-
+require('dotenv').config(); 
 const {Datastore} = require('@google-cloud/datastore');
 
 const bodyParser = require('body-parser');
@@ -22,9 +22,9 @@ const BOAT = "Boat";
 const router = express.Router();
 const login = express.Router();
 
-const CLIENT_ID = 'jGPlK34s10yEoMFXM7RFmzyo3NxWertG';
-const CLIENT_SECRET = 'IPtU-JePD5P1ACVlXwzyAT3ZVOZqRDspZba3FhcL-mPN2B6-QT7O3pO1n2UoyD0O';
-const DOMAIN = '493-assignment-7.us.auth0.com';
+const CLIENT_ID = process.env.AUTH0_CLIENT_ID; 
+const CLIENT_SECRET = process.env.AUTH0_CLIENT_SECRET; 
+const DOMAIN = process.env.AUTH0_DOMAIN; 
 
 app.use(bodyParser.json());
 
