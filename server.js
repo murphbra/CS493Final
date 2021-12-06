@@ -132,34 +132,34 @@ function get_loads(req){
     const results = {};
     get_loads_count().then ((loads) => {
         var total = loads.length; 
-        return total; 
     }).then((total) => {
         results.total_items_in_collection = total;
-        var q = datastore.createQuery(LOAD).limit(5);
-        if(Object.keys(req.query).includes("cursor")){
-            q = q.start(req.query.cursor);
-        }
-	    return datastore.runQuery(q).then( (entities) => {
-                results.items = entities[0].map(fromDatastore);
-
-                for(i=0;i<results.items.length;i++)
-                {
-                    results.items[i].self = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + results.items[i].id;
-                    if(results.items[i].carrier != null)
-                    {
-                        results.items[i].carrier.self = "https://portfolioproject-334304.wm.r.appspot.com/boats/" + results.items[i].carrier.id; 
-                    }
-                }
-
-                if(entities[1].moreResults !== Datastore.NO_MORE_RESULTS ){
-                    results.next = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + "?cursor=" + entities[1].endCursor;
-                }
-                else {
-                    results.next = "No more results"; 
-                }
-			    return results;
-		});
     })
+    results.total_items_in_collection = total; 
+    var q = datastore.createQuery(LOAD).limit(5);
+    if(Object.keys(req.query).includes("cursor")){
+        q = q.start(req.query.cursor);
+    }
+	return datastore.runQuery(q).then( (entities) => {
+            results.items = entities[0].map(fromDatastore);
+
+            for(i=0;i<results.items.length;i++)
+            {
+                results.items[i].self = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + results.items[i].id;
+                if(results.items[i].carrier != null)
+                {
+                    results.items[i].carrier.self = "https://portfolioproject-334304.wm.r.appspot.com/boats/" + results.items[i].carrier.id; 
+                }
+            }
+
+            if(entities[1].moreResults !== Datastore.NO_MORE_RESULTS ){
+                results.next = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + "?cursor=" + entities[1].endCursor;
+            }
+            else {
+                results.next = "No more results"; 
+            }
+			return results;
+		});
 }
 
 function delete_load(id) {
