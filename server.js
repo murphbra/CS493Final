@@ -330,6 +330,9 @@ router.post('/boats', errorJwtPost(), function(req, res){
     })
 });
 
+//REINSTATE this route later 
+/*
+
 router.delete('/boats/:boat_id', errorJwtPost(), function(req, res){
     get_boat(req.params.boat_id).then((boat) => {
         if(boat[0] === undefined || boat[0] === null){
@@ -345,6 +348,7 @@ router.delete('/boats/:boat_id', errorJwtPost(), function(req, res){
         }
     }); 
 }); 
+*/
 
 router.post('/loads', function (req, res) {
     if(req.body.volume === undefined)
