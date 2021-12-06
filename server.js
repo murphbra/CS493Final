@@ -145,7 +145,7 @@ function errorJwtGet(){
 
 /* ------------- Begin Controller Functions ------------- */
 router.get('/', function(req, res) {
-    res.render("index"); 
+    res.send("successful"); 
 }); 
 
 router.get('/boats', errorJwtGet(), function(req, res){
