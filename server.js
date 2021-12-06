@@ -110,6 +110,14 @@ function post_load(volume, content) {
         return new_load });
 }
 
+function put_load(volume, carrier, content, creation_date) {
+    var key = datastore.key(LOAD);
+    const new_load = { "volume": volume, "carrier": carrier, "content": content, "creation_date": creation_date };
+    return datastore.save({ "key": key, "data": new_load }).then(() => { 
+        new_load.id = key.id; 
+        return new_load });
+}
+
 function get_load(id) {
     const key = datastore.key([LOAD, parseInt(id, 10)]);
     return datastore.get(key).then((entity) => {
@@ -281,24 +289,13 @@ router.post('/loads', function (req, res) {
     else 
     {
         post_load(req.body.volume, req.body.content).then(new_load => { 
-            new_lDelad.self = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + new_load.id; 
+            new_load.self = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + new_load.id; 
             res.status(201).send(new_load); 
         }); 
     }
 });
 
-/*
-router.get('/loads', function (req, res) {
-    const loads = get_loads(req).then((loads) => {
-        results = {}; 
-        for(var i = 0; i < loads.length; i++)
-        {
 
-        }
-            res.status(200).json(loads);
-        });
-});
-*/
 router.get('/loads', function(req, res) {
     const loads = get_loads(req).then((loads) => {
         get_loads_count().then((total) => {
@@ -307,6 +304,48 @@ router.get('/loads', function(req, res) {
         })
     })
 }); 
+
+//volume, carrier, content, creation_date
+
+router.put('/loads/:load_id', function (req, res) {
+    if(req.body.volume === undefined)
+    {
+        res.status(400).json({ 'Error': 'The request object is missing at least one of the required attributes' }).end(); 
+    } 
+    if(req.body.content === undefined)
+    {
+        res.status(400).json({ 'Error': 'The request object is missing at least one of the required attributes' }).end(); 
+    } 
+    else 
+    {
+        get_load(req.params.load_id).then((load) => {
+            var carrier = load.carrier; 
+            var creation_date = load.creation_date; 
+            put_load(req.body.volume, carrier, req.body.content, creation_date).then(new_load => { 
+                new_load.self = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + new_load.id; 
+                res.status(201).send(new_load); 
+            }); 
+        })
+    }
+});
+
+router.patch('/loads', function (req, res) {
+    if(req.body.volume === undefined)
+    {
+        res.status(400).json({ 'Error': 'The request object is missing at least one of the required attributes' }).end(); 
+    } 
+    if(req.body.content === undefined)
+    {
+        res.status(400).json({ 'Error': 'The request object is missing at least one of the required attributes' }).end(); 
+    } 
+    else 
+    {
+        patch_load(req.body.volume, req.body.content).then(new_load => { 
+            new_load.self = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + new_load.id; 
+            res.status(201).send(new_load); 
+        }); 
+    }
+});
 
 router.delete('/loads/:load_id', function(req, res) {
     get_load(req.params.load_id)
