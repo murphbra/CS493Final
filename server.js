@@ -110,8 +110,8 @@ function post_load(volume, content) {
         return new_load });
 }
 
-function put_load(volume, carrier, content, creation_date) {
-    var key = datastore.key(LOAD);
+function put_load(id, volume, carrier, content, creation_date) {
+    const key = datastore.key([LOAD, parseInt(id, 10)]);
     const new_load = { "volume": volume, "carrier": carrier, "content": content, "creation_date": creation_date };
     return datastore.save({ "key": key, "data": new_load }).then(() => { 
         new_load.id = key.id; 
@@ -321,7 +321,7 @@ router.put('/loads/:load_id', function (req, res) {
         get_load(req.params.load_id).then((load) => {
             var carrier = load[0].carrier; 
             var creation_date = load[0].creation_date; 
-            put_load(req.body.volume, carrier, req.body.content, creation_date).then(new_load => { 
+            put_load(req.params.load_id, req.body.volume, carrier, req.body.content, creation_date).then(new_load => { 
                 new_load.self = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + new_load.id; 
                 res.status(201).send(new_load); 
             }); 
