@@ -125,15 +125,13 @@ function get_loads_count(){
 	const q = datastore.createQuery(LOAD);
 	return datastore.runQuery(q).then( (entities) => {
 			return entities[0].map(fromDatastore);
-		}).then ((loads) => {
-            return loads.length; 
-        })
+		}); 
 }
 
 function get_loads(req){
     const results = {};
     get_loads_count().then((count) => {
-        results.total_items_in_collection = count 
+        results.total_items_in_collection = count.length; 
         return results; 
     }).then((results) => {
         //results.total_items_in_collection = 5; 
