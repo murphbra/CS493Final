@@ -301,10 +301,10 @@ router.get('/loads', function (req, res) {
 */
 router.get('/loads', function(req, res) {
     const loads = get_loads(req).then((loads) => {
-        results = {}; 
-        results.loads = loads; 
-        results.total_items_in_collection = loads.length; 
-        res.status(200).json(results); 
+        get_loads_count().then((total) => {
+            loads.total_items_in_collection = total.length; 
+            res.status(200).json(loads);
+        })
     })
 }); 
 
