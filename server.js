@@ -18,6 +18,7 @@ const jwt = require('express-jwt');
 const jwksRsa = require('jwks-rsa');
 
 const BOAT = "Boat";
+const USER = "User"; 
 
 const router = express.Router();
 const login = express.Router();
@@ -47,6 +48,24 @@ const checkJwt = jwt({
   });
 
 /* ------------- Begin Lodging Model Functions ------------- */
+function post_user(name){
+    var key = datastore.key(USER);
+	const new_user = {"name": name};
+	return datastore.save({"key":key, "data":new_user}).then(() => {
+        new_user.id = key.id; 
+        return new_user});
+}
+
+function get_users() {
+    const q = datastore.createQuery(USER);
+    return datastore.runQuery(q).then((entities) => {
+        // Use Array.map to call the function fromDatastore. This function
+        // adds id attribute to every element in the array at element 0 of
+        // the variable entities
+        return entities[0].map(fromDatastore);
+    });
+}
+
 function post_boat(name, type, length, public, owner){
     var key = datastore.key(BOAT);
 	const new_boat = {"name": name, "type": type, "length": length, "public": public, "owner":owner};
