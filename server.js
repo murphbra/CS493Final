@@ -26,11 +26,6 @@ const CLIENT_ID = 'l31VqXyaQzHDIwQE7sEhXHCVfbRYj6vG';
 const CLIENT_SECRET = 'AXtJLEs2rrotNs29BP8TkkDpfZAxl9-XsH_ghwkZScCHtNS3p-MMMylRdGG7CUrz';
 const DOMAIN = '493-assignment-7.us.auth0.com';
 
-var exphbs = require('express-handlebars');
-app.engine('.hbs', exphbs({                     
-    extname: ".hbs"
-}));
-
 app.use(bodyParser.json());
 
 function fromDatastore(item){
@@ -51,7 +46,7 @@ const checkJwt = jwt({
     algorithms: ['RS256']
   });
 
-  app.set('view engine', '.hbs'); 
+
 
 /* ------------- Begin Lodging Model Functions ------------- */
 function post_boat(name, type, length, public, owner){
