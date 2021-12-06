@@ -67,19 +67,56 @@ function get_users() {
     });
 }
 
-function post_boat(name, type, length, public, owner){
+function post_boat(name, type, length, owner){
     var key = datastore.key(BOAT);
 	const new_boat = {"name": name, "type": type, "length": length, "owner":owner};
 	return datastore.save({"key":key, "data":new_boat}).then(() => {
         new_boat.id = key.id; 
         return new_boat});
 }
-
+/*
 function get_boats(owner){
 	const q = datastore.createQuery(BOAT);
 	return datastore.runQuery(q).then( (entities) => {
 			return entities[0].map(fromDatastore).filter( item => item.owner === owner );
 		});
+}
+*/
+
+function get_boats_by_owner(req, name){
+    const results = {};
+    //results.total_items_in_collection = 5; 
+    var q = datastore.createQuery(BOAT).filter( item => item.name === name).limit(5);
+    if(Object.keys(req.query).includes("cursor")){
+        q = q.start(req.query.cursor);
+    }
+    return datastore.runQuery(q).then( (entities) => {
+            results.items = entities[0].map(fromDatastore);
+
+            for(i=0;i<results.items.length;i++)
+            {
+                results.items[i].self = "https://portfolioproject-334304.wm.r.appspot.com/boats/" + results.items[i].id;
+                if(results.items[i].carrier != null)
+                {
+                    results.items[i].carrier.self = "https://portfolioproject-334304.wm.r.appspot.com/boats/" + results.items[i].carrier.id; 
+                }
+            }
+
+            if(entities[1].moreResults !== Datastore.NO_MORE_RESULTS ){
+                results.next = "https://portfolioproject-334304.wm.r.appspot.com/boats/" + "?cursor=" + entities[1].endCursor;
+            }
+            else {
+                results.next = "No more results"; 
+            }
+            return results;
+        });
+}
+
+function get_boats_count(){
+	const q = datastore.createQuery(BOAT);
+	return datastore.runQuery(q).then( (entities) => {
+			return entities[0].map(fromDatastore);
+		}); 
 }
 
 function get_boat(id) {
@@ -241,22 +278,43 @@ router.get('/users', function(req, res) {
     })
 }); 
 
+/*
+router.get('/loads', function(req, res) {
+    const loads = get_loads(req).then((loads) => {
+        get_loads_count().then((total) => {
+            loads.total_items_in_collection = total.length; 
+            res.status(200).json(loads);
+        })
+    })
+}); 
+-------------------------------------------
 router.get('/boats', errorJwtGet(), function(req, res){
         get_boats(req.user.sub)
         .then( (boats) => {
             res.status(200).json(boats); 
         })
 });
+*/
 
+router.get('/boats', errorJwtPost(), function(req, res) {
+    const boats = get_boats_by_owner(req.user.name, req).then((boats) => {
+        get_boats_count().then((total) => {
+            boats.total_items_in_collection = total.length; 
+            res.status(200).json(boats);
+        })
+    })
+}); 
+
+/*
 router.get('/owners/:owner_id/boats', function(req, res){
     get_boats_public_owner(req.params.owner_id).then((boats) =>{
         res.status(200).json(boats); 
     })
 }); 
-
+*/
 
 router.post('/boats', errorJwtPost(), function(req, res){
-    post_boat(req.body.name, req.body.type, req.body.length, req.body.public, req.user.sub).then((boat) => {
+    post_boat(req.body.name, req.body.type, req.body.length, req.user.name).then((boat) => {
         res.status(201).json(boat).end(); 
     })
 });
