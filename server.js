@@ -315,6 +315,7 @@ router.get('/owners/:owner_id/boats', function(req, res){
 
 router.post('/boats', errorJwtPost(), function(req, res){
     post_boat(req.body.name, req.body.type, req.body.length, req.user.name).then((boat) => {
+        boat.self = "https://portfolioproject-334304.wm.r.appspot.com/boats/" + boat.id; 
         res.status(201).json(boat).end(); 
     })
 });
