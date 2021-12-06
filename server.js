@@ -461,6 +461,15 @@ router.delete('/loads/:load_id', function(req, res) {
 
 }); 
 
+router.delete('/boats/clear', function(req, res) {
+    get_boats_count().then((boats) =>{
+        for(var i = 0; i < boats.length; i++)
+        {
+            delete_boat(boats[i].id); 
+        }
+        res.status(204).end(); 
+    })
+}); 
 
 login.post('/', function(req, res){
     const username = req.body.username;
