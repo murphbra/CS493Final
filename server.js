@@ -227,11 +227,14 @@ router.get('/', function(req, res) {
 
 router.get('/users', function(req, res) {
     const users = get_users().then((users) => {
+        results = {}; 
         for(var i = 0; i<users.length; i++)
         {
             users[i].self = "https://portfolioproject-334304.wm.r.appspot.com/" + users[i].id; 
         }
-        res.status(200).json(users); 
+        results.users = users; 
+        results.total_items_in_collection = users.length; 
+        res.status(200).json(results); 
     })
 }); 
 
