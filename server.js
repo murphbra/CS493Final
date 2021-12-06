@@ -37,8 +37,9 @@ const checkJwt = jwt({
   });
 
 app.set('trust proxy', true);
-/*
+
 var exphbs = require('express-handlebars');
+/*
 app.engine('.hbs', exphbs({                     
     extname: ".hbs"
 }));
