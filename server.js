@@ -26,7 +26,13 @@ const CLIENT_ID = 'jGPlK34s10yEoMFXM7RFmzyo3NxWertG';
 const CLIENT_SECRET = 'IPtU-JePD5P1ACVlXwzyAT3ZVOZqRDspZba3FhcL-mPN2B6-QT7O3pO1n2UoyD0O';
 const DOMAIN = '493-assignment-7.us.auth0.com';
 
+var exphbs = require('express-handlebars');
+app.engine('.hbs', exphbs({                     
+    extname: ".hbs"
+}));
+
 app.use(bodyParser.json());
+app.set('view engine', '.hbs'); 
 
 function fromDatastore(item){
     item.id = item[Datastore.KEY].id;
@@ -137,6 +143,9 @@ function errorJwtGet(){
 /* ------------- End Model Functions ------------- */
 
 /* ------------- Begin Controller Functions ------------- */
+router.get('/home', function(req, res) {
+    res.render("home"); 
+})
 
 router.get('/boats', errorJwtGet(), function(req, res){
         get_boats(req.user.sub)
