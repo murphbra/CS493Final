@@ -136,14 +136,14 @@ function get_loads(req){
         q = q.start(req.query.cursor);
     }
     return datastore.runQuery(q).then( (entities) => {
-            results.items = entities[0].map(fromDatastore);
+            results.loads = entities[0].map(fromDatastore);
 
-            for(i=0;i<results.items.length;i++)
+            for(i=0;i<results.loads.length;i++)
             {
-                results.items[i].self = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + results.items[i].id;
-                if(results.items[i].carrier != null)
+                results.loads[i].self = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + results.items[i].id;
+                if(results.loads[i].carrier != null)
                 {
-                    results.items[i].carrier.self = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + results.items[i].carrier.id; 
+                    results.loads[i].carrier.self = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + results.items[i].carrier.id; 
                 }
             }
 
