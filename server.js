@@ -315,13 +315,6 @@ router.get('/boats', errorJwtPost(), function(req, res) {
     })
 }); 
 
-/*
-router.get('/owners/:owner_id/boats', function(req, res){
-    get_boats_public_owner(req.params.owner_id).then((boats) =>{
-        res.status(200).json(boats); 
-    })
-}); 
-*/
 
 router.post('/boats', errorJwtPost(), function(req, res){
     post_boat(req.body.name, req.body.type, req.body.length, req.user.name).then((boat) => {
@@ -470,18 +463,9 @@ router.delete('/loads/:load_id', function(req, res) {
 
 }); 
 
-router.delete('/boats/clear', function(req, res) {
-    get_boats_count().then((boats) =>{
-        for(var i = 0; i < boats.length; i++)
-        {
-            delete_boat(boats[i].id); 
-        }
-        res.status(204).end(); 
-    })
-}); 
-
 router.delete('/boats/:boat_id', function(req,res){
     delete_boat(req.params.boat_id); 
+    res.status(204).end(); 
 });
 
 login.post('/', function(req, res){
