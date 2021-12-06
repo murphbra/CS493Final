@@ -22,8 +22,8 @@ const BOAT = "Boat";
 const router = express.Router();
 const login = express.Router();
 
-const CLIENT_ID = 'jGPlK34s10yEoMFXM7RFmzyo3NxWertG';
-const CLIENT_SECRET = 'IPtU-JePD5P1ACVlXwzyAT3ZVOZqRDspZba3FhcL-mPN2B6-QT7O3pO1n2UoyD0O';
+const CLIENT_ID = 'l31VqXyaQzHDIwQE7sEhXHCVfbRYj6vG';
+const CLIENT_SECRET = 'AXtJLEs2rrotNs29BP8TkkDpfZAxl9-XsH_ghwkZScCHtNS3p-MMMylRdGG7CUrz';
 const DOMAIN = '493-assignment-7.us.auth0.com';
 
 var exphbs = require('express-handlebars');
@@ -32,7 +32,6 @@ app.engine('.hbs', exphbs({
 }));
 
 app.use(bodyParser.json());
-app.set('view engine', '.hbs'); 
 
 function fromDatastore(item){
     item.id = item[Datastore.KEY].id;
@@ -51,6 +50,8 @@ const checkJwt = jwt({
     issuer: `https://${DOMAIN}/`,
     algorithms: ['RS256']
   });
+
+  app.set('view engine', '.hbs'); 
 
 /* ------------- Begin Lodging Model Functions ------------- */
 function post_boat(name, type, length, public, owner){
@@ -143,9 +144,9 @@ function errorJwtGet(){
 /* ------------- End Model Functions ------------- */
 
 /* ------------- Begin Controller Functions ------------- */
-router.get('/home', function(req, res) {
-    res.render("home"); 
-})
+router.get('/', function(req, res) {
+    res.render("index"); 
+}); 
 
 router.get('/boats', errorJwtGet(), function(req, res){
         get_boats(req.user.sub)
