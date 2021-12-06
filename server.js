@@ -69,7 +69,8 @@ function get_users() {
 
 function post_boat(name, type, length, owner){
     var key = datastore.key(BOAT);
-	const new_boat = {"name": name, "type": type, "length": length, "owner":owner};
+    var loads = []; 
+	const new_boat = {"name": name, "type": type, "length": length, "loads": loads, "owner":owner};
 	return datastore.save({"key":key, "data":new_boat}).then(() => {
         new_boat.id = key.id; 
         return new_boat});
@@ -96,9 +97,13 @@ function get_boats_by_owner(name, req){
             for(i=0;i<results.items.length;i++)
             {
                 results.items[i].self = "https://portfolioproject-334304.wm.r.appspot.com/boats/" + results.items[i].id;
-                if(results.items[i].carrier != null)
+
+                if(results.items[i].loads.length > 0)
                 {
-                    results.items[i].carrier.self = "https://portfolioproject-334304.wm.r.appspot.com/boats/" + results.items[i].carrier.id; 
+                    for(var x = 0; x < results.items[i].loads.length; x++)
+                    {
+                        results.items[i].loads[x].self =  "https://portfolioproject-334304.wm.r.appspot.com/boats/" + results.items[i].loads[x].id;
+                    } 
                 }
             }
 
