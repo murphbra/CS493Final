@@ -130,36 +130,31 @@ function get_loads_count(){
 
 function get_loads(req){
     const results = {};
-    get_loads_count().then((count) => {
-        results.total_items_in_collection = count.length; 
-        return results; 
-    }).then((results) => {
-        //results.total_items_in_collection = 5; 
-        var q = datastore.createQuery(LOAD).limit(5);
-        if(Object.keys(req.query).includes("cursor")){
-            q = q.start(req.query.cursor);
-        }
-        return datastore.runQuery(q).then( (entities) => {
-                results.items = entities[0].map(fromDatastore);
+    //results.total_items_in_collection = 5; 
+    var q = datastore.createQuery(LOAD).limit(5);
+    if(Object.keys(req.query).includes("cursor")){
+        q = q.start(req.query.cursor);
+    }
+    return datastore.runQuery(q).then( (entities) => {
+            results.items = entities[0].map(fromDatastore);
 
-                for(i=0;i<results.items.length;i++)
+            for(i=0;i<results.items.length;i++)
+            {
+                results.items[i].self = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + results.items[i].id;
+                if(results.items[i].carrier != null)
                 {
-                    results.items[i].self = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + results.items[i].id;
-                    if(results.items[i].carrier != null)
-                    {
-                        results.items[i].carrier.self = "https://portfolioproject-334304.wm.r.appspot.com/boats/" + results.items[i].carrier.id; 
-                    }
+                    results.items[i].carrier.self = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + results.items[i].carrier.id; 
                 }
+            }
 
-                if(entities[1].moreResults !== Datastore.NO_MORE_RESULTS ){
-                    results.next = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + "?cursor=" + entities[1].endCursor;
-                }
-                else {
-                    results.next = "No more results"; 
-                }
-                return results;
-            });
-    })
+            if(entities[1].moreResults !== Datastore.NO_MORE_RESULTS ){
+                results.next = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + "?cursor=" + entities[1].endCursor;
+            }
+            else {
+                results.next = "No more results"; 
+            }
+            return results;
+        });
 }
 
 function delete_load(id) {
@@ -230,7 +225,7 @@ router.get('/users', function(req, res) {
         results = {}; 
         for(var i = 0; i<users.length; i++)
         {
-            users[i].self = "https://portfolioproject-334304.wm.r.appspot.com/" + users[i].id; 
+            users[i].self = "https://portfolioproject-334304.wm.r.appspot.com/users/" + users[i].id; 
         }
         results.users = users; 
         results.total_items_in_collection = users.length; 
@@ -292,11 +287,26 @@ router.post('/loads', function (req, res) {
     }
 });
 
+/*
 router.get('/loads', function (req, res) {
     const loads = get_loads(req).then((loads) => {
+        results = {}; 
+        for(var i = 0; i < loads.length; i++)
+        {
+
+        }
             res.status(200).json(loads);
         });
 });
+*/
+router.get('/loads', function(req, res) {
+    const loads = get_loads(req).then((loads) => {
+        results = {}; 
+        results.loads = loads; 
+        results.total_items_in_collection = loads.length; 
+        res.status(200).json(results); 
+    })
+}); 
 
 router.delete('/loads/:load_id', function(req, res) {
     get_load(req.params.load_id)
