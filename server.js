@@ -300,6 +300,11 @@ router.get('/boats', errorJwtGet(), function(req, res){
         })
 });
 */
+router.get('/boats/all', function (req, res) {
+    const boats = get_boats_count().then((boats) => {
+            res.status(200).json(boats);
+        });
+});
 
 router.get('/boats', errorJwtPost(), function(req, res) {
     const boats = get_boats_by_owner(req.user.name, req).then((boats) => {
@@ -470,6 +475,10 @@ router.delete('/boats/clear', function(req, res) {
         res.status(204).end(); 
     })
 }); 
+
+router.delete('boats/:boat_id', function(req,res){
+    delete_boat(req.params.boat_id); 
+});
 
 login.post('/', function(req, res){
     const username = req.body.username;
