@@ -14,8 +14,8 @@ const jwt = require('express-jwt');
 const jwksRsa = require('jwks-rsa');
 
 const BOAT = "Boat";
-const LOAD = "Load"; 
-const USER = "User"; 
+//const LOAD = "Load"; 
+//const USER = "User"; 
 
 const router = express.Router();
 const login = express.Router();
@@ -44,7 +44,7 @@ const checkJwt = jwt({
     algorithms: ['RS256']
   });
 
-app.set('trust proxy', true);
+//app.set('trust proxy', true);
 
 /* ------------- Begin Lodging Model Functions ------------- */
 /*
