@@ -293,11 +293,20 @@ function errorJwtGet(){
 /* ------------- End Model Functions ------------- */
 
 /* ------------- Begin Controller Functions ------------- */
-router.get('/', function(req, res) {
-    res.send("Success"); 
-}); 
+router.delete('/boats', function (req, res){
+    res.set('Accept', 'GET, POST');
+    res.status(405).end();
+});
+
 
 router.get('/users', function(req, res) {
+    const accepts = req.accepts(['application/json']); 
+    if(!accepts)
+    {
+        res.status(406).json({'Error': 'Client must accept application/json'}).end(); 
+        return; 
+    }
+
     const users = get_users().then((users) => {
         results = {}; 
         for(var i = 0; i<users.length; i++)
@@ -311,12 +320,26 @@ router.get('/users', function(req, res) {
 }); 
 
 router.get('/boats/all', function (req, res) {
+    const accepts = req.accepts(['application/json']); 
+    if(!accepts)
+    {
+        res.status(406).json({'Error': 'Client must accept application/json'}).end(); 
+        return; 
+    }
+
     const boats = get_boats_count().then((boats) => {
             res.status(200).json(boats);
         });
 });
 
 router.get('/boats', errorJwtPost(), function(req, res) {
+    const accepts = req.accepts(['application/json']); 
+    if(!accepts)
+    {
+        res.status(406).json({'Error': 'Client must accept application/json'}).end(); 
+        return; 
+    }
+
     const boats = get_boats_by_owner(req.user.name, req).then((boats) => {
         get_boats_filtered(req.user.name).then((total) => {
             boats.total_items_in_collection = total.length; 
@@ -326,6 +349,13 @@ router.get('/boats', errorJwtPost(), function(req, res) {
 }); 
 
 router.get('/boats/:boat_id', errorJwtPost(), function(req, res){
+    const accepts = req.accepts(['application/json']); 
+    if(!accepts)
+    {
+        res.status(406).json({'Error': 'Client must accept application/json'}).end(); 
+        return; 
+    }
+
     get_boat(req.params.boat_id).then((boat) => {
         if(req.user.name !== boat[0].owner)
         {
@@ -347,6 +377,13 @@ router.get('/boats/:boat_id', errorJwtPost(), function(req, res){
 });
 
 router.post('/boats', errorJwtPost(), function(req, res){
+    const accepts = req.accepts(['application/json']); 
+    if(!accepts)
+    {
+        res.status(406).json({'Error': 'Client must accept application/json'}).end(); 
+        return; 
+    }
+
     post_boat(req.body.name, req.body.type, req.body.length, req.user.name).then((boat) => {
         boat.self = "https://portfolioproject-334304.wm.r.appspot.com/boats/" + boat.id; 
         res.status(201).json(boat).end(); 
@@ -354,6 +391,13 @@ router.post('/boats', errorJwtPost(), function(req, res){
 });
 
 router.put('/boats/:boat_id', errorJwtPost(), function (req, res) {
+    const accepts = req.accepts(['application/json']); 
+    if(!accepts)
+    {
+        res.status(406).json({'Error': 'Client must accept application/json'}).end(); 
+        return; 
+    }
+
     if(req.body.type === undefined)
     {
         res.status(400).json({ 'Error': 'The request object is missing at least one of the required attributes' }).end(); 
@@ -378,13 +422,20 @@ router.put('/boats/:boat_id', errorJwtPost(), function (req, res) {
 
             put_boat(req.params.boat_id, req.body.name, req.body.type, req.body.length, loads, owner).then(new_boat => { 
                 new_boat.self = "https://portfolioproject-334304.wm.r.appspot.com/boats/" + new_boat.id; 
-                res.status(201).send(new_boat); 
+                res.status(201).json(new_boat); 
             }); 
         })
     }
 });
 
 router.patch('/boats/:boat_id', errorJwtPost(), function (req, res) {
+    const accepts = req.accepts(['application/json']); 
+    if(!accepts)
+    {
+        res.status(406).json({'Error': 'Client must accept application/json'}).end(); 
+        return; 
+    }
+
     if(req.body.type === undefined && req.body.length === undefined && req.body.name)
     {
         res.status(400).json({ 'Error': 'The request object does not contain any relevant attributes' }).end(); 
@@ -426,13 +477,20 @@ router.patch('/boats/:boat_id', errorJwtPost(), function (req, res) {
 
             put_boat(req.params.boat_id, name, type, length, loads, owner).then(new_boat => { 
                 new_boat.self = "https://portfolioproject-334304.wm.r.appspot.com/boats/" + new_boat.id; 
-                res.status(201).send(new_boat); 
+                res.status(200).json(new_boat); 
             }); 
         })
     }
 });
 
 router.post('/loads', function (req, res) {
+    const accepts = req.accepts(['application/json']); 
+    if(!accepts)
+    {
+        res.status(406).json({'Error': 'Client must accept application/json'}).end(); 
+        return; 
+    }
+
     if(req.body.volume === undefined)
     {
         res.status(400).json({ 'Error': 'The request object is missing at least one of the required attributes' }).end(); 
@@ -445,12 +503,19 @@ router.post('/loads', function (req, res) {
     {
         post_load(req.body.volume, req.body.content).then(new_load => { 
             new_load.self = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + new_load.id; 
-            res.status(201).send(new_load); 
+            res.status(201).json(new_load); 
         }); 
     }
 });
 
 router.get('/loads', function(req, res) {
+    const accepts = req.accepts(['application/json']); 
+    if(!accepts)
+    {
+        res.status(406).json({'Error': 'Client must accept application/json'}).end(); 
+        return; 
+    }
+
     const loads = get_loads(req).then((loads) => {
         get_loads_count().then((total) => {
             loads.total_items_in_collection = total.length; 
@@ -460,6 +525,13 @@ router.get('/loads', function(req, res) {
 }); 
 
 router.get('/loads/:load_id', function(req, res){
+    const accepts = req.accepts(['application/json']); 
+    if(!accepts)
+    {
+        res.status(406).json({'Error': 'Client must accept application/json'}).end(); 
+        return; 
+    }
+
     get_load(req.params.load_id).then((load) => {
         load[0].self = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + load[0].id;
         if(load[0].carrier !== null)
@@ -471,6 +543,13 @@ router.get('/loads/:load_id', function(req, res){
 })
 
 router.put('/loads/:load_id', function (req, res) {
+    const accepts = req.accepts(['application/json']); 
+    if(!accepts)
+    {
+        res.status(406).json({'Error': 'Client must accept application/json'}).end(); 
+        return; 
+    }
+
     if(req.body.volume === undefined)
     {
         res.status(400).json({ 'Error': 'The request object is missing at least one of the required attributes' }).end(); 
@@ -486,13 +565,20 @@ router.put('/loads/:load_id', function (req, res) {
             var creation_date = load[0].creation_date; 
             put_load(req.params.load_id, req.body.volume, carrier, req.body.content, creation_date).then(new_load => { 
                 new_load.self = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + new_load.id; 
-                res.status(201).send(new_load); 
+                res.status(201).json(new_load); 
             }); 
         })
     }
 });
 
 router.patch('/loads/:load_id', function (req, res) {
+    const accepts = req.accepts(['application/json']); 
+    if(!accepts)
+    {
+        res.status(406).json({'Error': 'Client must accept application/json'}).end(); 
+        return; 
+    }
+
     if(req.body.volume === undefined && req.body.content === undefined)
     {
         res.status(400).json({ 'Error': 'The request object does not contain any relevant attributes' }).end(); 
@@ -520,7 +606,7 @@ router.patch('/loads/:load_id', function (req, res) {
             var creation_date = load[0].creation_date; 
             put_load(req.params.load_id, volume, carrier, content, creation_date).then(new_load => { 
                 new_load.self = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + new_load.id; 
-                res.status(201).send(new_load); 
+                res.status(200).json(new_load); 
             }); 
         })
     }
@@ -629,7 +715,7 @@ router.put('/boats/:boat_id/loads/:load_id', function (req, res) {
                             var creation_date = load[0].creation_date;
                             const carrier = {"id": req.params.boat_id, "name": name}; 
                             assign_boat_to_load(req.params.load_id, volume, carrier, content, creation_date); 
-                            res.status(204).end(); 
+                            res.status(201).end(); 
                         }
                     })
                 }
@@ -711,6 +797,13 @@ router.delete('/boats/:boat_id/loads/:load_id', function (req, res) {
 }); 
 
 login.post('/', function(req, res){
+    const accepts = req.accepts(['application/json']); 
+    if(!accepts)
+    {
+        res.status(406).json({'Error': 'Client must accept application/json'}).end(); 
+        return; 
+    }
+
     const username = req.body.username;
     const password = req.body.password;
     var options = { method: 'POST',
@@ -725,7 +818,7 @@ login.post('/', function(req, res){
             json: true };
     request(options, (error, response, body) => {
         if (error){
-            res.status(500).send(error);
+            res.status(500).json({"Error": error});
         } else {
             var newUser = true; 
             get_users().then((users) => {
@@ -743,7 +836,7 @@ login.post('/', function(req, res){
                     post_user(username); 
                 }
             }).then( () => {
-                res.send(body); 
+                res.json(body); 
             }); 
             //res.send(body);
         }
