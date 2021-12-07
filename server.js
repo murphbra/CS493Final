@@ -329,6 +329,10 @@ router.get('/boats/all', function (req, res) {
         res.status(406).json({'Error': 'Client must accept application/json'}).end(); 
         return; 
     }
+    if(req.get('Accept') === undefined)
+    {
+        res.status(406).json({'Error': 'Client must accept application/json'}).end();
+    }
 
     const boats = get_boats_count().then((boats) => {
             res.status(200).json(boats);
@@ -341,6 +345,10 @@ router.get('/boats', errorJwtPost(), function(req, res) {
     {
         res.status(406).json({'Error': 'Client must accept application/json'}).end(); 
         return; 
+    }
+    if(req.get('Accept') === undefined)
+    {
+        res.status(406).json({'Error': 'Client must accept application/json'}).end();
     }
 
     const boats = get_boats_by_owner(req.user.name, req).then((boats) => {
@@ -357,6 +365,10 @@ router.get('/boats/:boat_id', errorJwtPost(), function(req, res){
     {
         res.status(406).json({'Error': 'Client must accept application/json'}).end(); 
         return; 
+    }
+    if(req.get('Accept') === undefined)
+    {
+        res.status(406).json({'Error': 'Client must accept application/json'}).end();
     }
 
     get_boat(req.params.boat_id).then((boat) => {
@@ -386,6 +398,10 @@ router.post('/boats', errorJwtPost(), function(req, res){
         res.status(406).json({'Error': 'Client must accept application/json'}).end(); 
         return; 
     }
+    if(req.get('Accept') === undefined)
+    {
+        res.status(406).json({'Error': 'Client must accept application/json'}).end();
+    }
 
     post_boat(req.body.name, req.body.type, req.body.length, req.user.name).then((boat) => {
         boat.self = "https://portfolioproject-334304.wm.r.appspot.com/boats/" + boat.id; 
@@ -399,6 +415,10 @@ router.put('/boats/:boat_id', errorJwtPost(), function (req, res) {
     {
         res.status(406).json({'Error': 'Client must accept application/json'}).end(); 
         return; 
+    }
+    if(req.get('Accept') === undefined)
+    {
+        res.status(406).json({'Error': 'Client must accept application/json'}).end();
     }
 
     if(req.body.type === undefined)
@@ -437,6 +457,10 @@ router.patch('/boats/:boat_id', errorJwtPost(), function (req, res) {
     {
         res.status(406).json({'Error': 'Client must accept application/json'}).end(); 
         return; 
+    }
+    if(req.get('Accept') === undefined)
+    {
+        res.status(406).json({'Error': 'Client must accept application/json'}).end();
     }
 
     if(req.body.type === undefined && req.body.length === undefined && req.body.name)
@@ -493,6 +517,10 @@ router.post('/loads', function (req, res) {
         res.status(406).json({'Error': 'Client must accept application/json'}).end(); 
         return; 
     }
+    if(req.get('Accept') === undefined)
+    {
+        res.status(406).json({'Error': 'Client must accept application/json'}).end();
+    }
 
     if(req.body.volume === undefined)
     {
@@ -518,6 +546,10 @@ router.get('/loads', function(req, res) {
         res.status(406).json({'Error': 'Client must accept application/json'}).end(); 
         return; 
     }
+    if(req.get('Accept') === undefined)
+    {
+        res.status(406).json({'Error': 'Client must accept application/json'}).end();
+    }
 
     const loads = get_loads(req).then((loads) => {
         get_loads_count().then((total) => {
@@ -533,6 +565,10 @@ router.get('/loads/:load_id', function(req, res){
     {
         res.status(406).json({'Error': 'Client must accept application/json'}).end(); 
         return; 
+    }
+    if(req.get('Accept') === undefined)
+    {
+        res.status(406).json({'Error': 'Client must accept application/json'}).end();
     }
 
     get_load(req.params.load_id).then((load) => {
@@ -551,6 +587,10 @@ router.put('/loads/:load_id', function (req, res) {
     {
         res.status(406).json({'Error': 'Client must accept application/json'}).end(); 
         return; 
+    }
+    if(req.get('Accept') === undefined)
+    {
+        res.status(406).json({'Error': 'Client must accept application/json'}).end();
     }
 
     if(req.body.volume === undefined)
@@ -580,6 +620,10 @@ router.patch('/loads/:load_id', function (req, res) {
     {
         res.status(406).json({'Error': 'Client must accept application/json'}).end(); 
         return; 
+    }
+    if(req.get('Accept') === undefined)
+    {
+        res.status(406).json({'Error': 'Client must accept application/json'}).end();
     }
 
     if(req.body.volume === undefined && req.body.content === undefined)
@@ -756,22 +800,6 @@ router.delete('/boats/:boat_id/loads/:load_id', function (req, res) {
 
                         else
                         {
-                            /*
-                            var name = boat[0].name;
-                            var type = boat[0].type;
-                            var length = boat[0].length; 
-                            var owner = boat[0].owner; 
-                            const load_array = boat[0].loads; 
-                            load_array.push({"id": req.params.load_id});
-                            assign_load_to_boat(req.params.boat_id, name, type, length, load_array, owner); 
-
-                            var volume = load[0].volume;
-                            var content = load[0].content; 
-                            var creation_date = load[0].creation_date;
-                            const carrier = {"id": req.params.boat_id, "name": name}; 
-                            assign_boat_to_load(req.params.load_id, volume, carrier, content, creation_date); 
-                            res.status(204).end(); 
-                            */
                             var name = boat[0].name;
                             var type = boat[0].type;
                             var length = boat[0].length; 
@@ -805,6 +833,10 @@ login.post('/', function(req, res){
     {
         res.status(406).json({'Error': 'Client must accept application/json'}).end(); 
         return; 
+    }
+    if(req.get('Accept') === undefined)
+    {
+        res.status(406).json({'Error': 'Client must accept application/json'}).end();
     }
 
     const username = req.body.username;
