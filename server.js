@@ -561,14 +561,16 @@ router.delete('/boats/:boat_id', errorJwtPost(), function(req,res){
             get_loads_count().then((loads) => {
                 for(var i = 0; i < loads.length; i++)
                 {
-                    if(loads[i].carrier.id === boat[0].id)
-                    {
-                        var id = loads[i].id; 
-                        var volume = loads[i].volume;
-                        var carrier = null; 
-                        var content = loads[i].content; 
-                        var creation_date = loads[i].creation_date; 
-                        put_load(id, volume, carrier, content, creation_date); 
+                    if(loads[i].carrier !== null){
+                        if(loads[i].carrier.id === boat[0].id)
+                        {
+                            var id = loads[i].id; 
+                            var volume = loads[i].volume;
+                            var carrier = null; 
+                            var content = loads[i].content; 
+                            var creation_date = loads[i].creation_date; 
+                            put_load(id, volume, carrier, content, creation_date); 
+                        }
                     }
                 }
                 delete_boat(req.params.boat_id); 
