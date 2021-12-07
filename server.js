@@ -454,7 +454,7 @@ router.get('/loads', function(req, res) {
 
 router.get('/loads/:load_id', function(req, res){
     get_load(req.params.load_id).then((load) => {
-        load[0].self = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + new_load.id;
+        load[0].self = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + load[0].id;
         res.status(200).json(load[0]); 
     })
 })
