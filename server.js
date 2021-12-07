@@ -312,11 +312,7 @@ router.post('/boats', errorJwtPost(), function(req, res){
     })
 });
 
-router.put('/boats/:boat_id', function (req, res) {
-    if(req.body.name === undefined)
-    {
-        res.status(400).json({ 'Error': 'The request object is missing at least one of the required attributes' }).end(); 
-    } 
+router.put('/boats/:boat_id', errorJwtPost(), function (req, res) {
     if(req.body.type === undefined)
     {
         res.status(400).json({ 'Error': 'The request object is missing at least one of the required attributes' }).end(); 
@@ -328,10 +324,14 @@ router.put('/boats/:boat_id', function (req, res) {
     else 
     {
         get_boat(req.params.boat_id).then((boat) => {
+            if(req.user.name !== boat[0].owner)
+            {
+                res.status(403).json({'Error': 'User does not have permission to modify this boat'});
+            }
             var loads = boat[0].loads;
             var owner = boat[0].owner; 
 
-            put_boat(req.params.boat_id, req.body.name, req.body.type, req.body.length, loads, owner).then(new_boat => { 
+            put_boat(req.params.boat_id, req.user.name, req.body.type, req.body.length, loads, owner).then(new_boat => { 
                 new_boat.self = "https://portfolioproject-334304.wm.r.appspot.com/boats/" + new_boat.id; 
                 res.status(201).send(new_boat); 
             }); 
@@ -339,21 +339,17 @@ router.put('/boats/:boat_id', function (req, res) {
     }
 });
 
-router.patch('/boats/:boat_id', function (req, res) {
-    if(req.body.name === undefined && req.body.type === undefined && req.body.length === undefined)
+router.patch('/boats/:boat_id', errorJwtPost(), function (req, res) {
+    if(req.body.type === undefined && req.body.length === undefined)
     {
         res.status(400).json({ 'Error': 'The request object does not contain any relevant attributes' }).end(); 
     } 
     else 
     {
         get_boat(req.params.boat_id).then((boat) => {
-            if(req.body.name === undefined)
+            if(req.user.name !== boat[0].owner)
             {
-                var name = boat[0].name;
-            }
-            else
-            {
-                var name = req.body.name;
+                res.status(403).json({'Error': 'User does not have permission to modify this boat'}); 
             }
             if(req.body.type === undefined)
             {
@@ -375,7 +371,7 @@ router.patch('/boats/:boat_id', function (req, res) {
             var loads = boat[0].loads; 
             var owner = boat[0].owner; 
 
-            put_boat(req.params.boat_id, name, type, length, loads, owner).then(new_boat => { 
+            put_boat(req.params.boat_id, req.user.name, type, length, loads, owner).then(new_boat => { 
                 new_boat.self = "https://portfolioproject-334304.wm.r.appspot.com/boats/" + new_boat.id; 
                 res.status(201).send(new_boat); 
             }); 
