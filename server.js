@@ -75,14 +75,14 @@ function post_boat(name, type, length, owner){
         new_boat.id = key.id; 
         return new_boat});
 }
-/*
-function get_boats(owner){
-	const q = datastore.createQuery(BOAT);
-	return datastore.runQuery(q).then( (entities) => {
-			return entities[0].map(fromDatastore).filter( item => item.owner === owner );
-		});
+
+function put_boat(id, name, type, length, loads, owner) {
+    const key = datastore.key([BOAT, parseInt(id, 10)]);
+    const new_boat = {"name": name, "type": type, "length": length, "loads": loads, "owner": owner};
+    return datastore.save({ "key": key, "data": new_boat }).then(() => { 
+        new_boat.id = key.id; 
+        return new_boat });
 }
-*/
 
 function get_boats_by_owner(owner_name, req){
     const results = {};
@@ -290,23 +290,6 @@ router.get('/users', function(req, res) {
     })
 }); 
 
-/*
-router.get('/loads', function(req, res) {
-    const loads = get_loads(req).then((loads) => {
-        get_loads_count().then((total) => {
-            loads.total_items_in_collection = total.length; 
-            res.status(200).json(loads);
-        })
-    })
-}); 
--------------------------------------------
-router.get('/boats', errorJwtGet(), function(req, res){
-        get_boats(req.user.sub)
-        .then( (boats) => {
-            res.status(200).json(boats); 
-        })
-});
-*/
 router.get('/boats/all', function (req, res) {
     const boats = get_boats_count().then((boats) => {
             res.status(200).json(boats);
@@ -322,7 +305,6 @@ router.get('/boats', errorJwtPost(), function(req, res) {
     })
 }); 
 
-
 router.post('/boats', errorJwtPost(), function(req, res){
     post_boat(req.body.name, req.body.type, req.body.length, req.user.name).then((boat) => {
         boat.self = "https://portfolioproject-334304.wm.r.appspot.com/boats/" + boat.id; 
@@ -330,6 +312,76 @@ router.post('/boats', errorJwtPost(), function(req, res){
     })
 });
 
+router.put('/boats/:boat_id', function (req, res) {
+    if(req.body.name === undefined)
+    {
+        res.status(400).json({ 'Error': 'The request object is missing at least one of the required attributes' }).end(); 
+    } 
+    if(req.body.type === undefined)
+    {
+        res.status(400).json({ 'Error': 'The request object is missing at least one of the required attributes' }).end(); 
+    } 
+    if(req.body.length === undefined)
+    {
+        res.status(400).json({ 'Error': 'The request object is missing at least one of the required attributes' }).end(); 
+    } 
+    else 
+    {
+        get_boat(req.params.boat_id).then((boat) => {
+            var loads = boat[0].loads;
+            var owner = boat[0].owner; 
+
+            put_boat(req.params.boat_id, req.body.name, req.body.type, req.body.length, loads, owner).then(new_boat => { 
+                new_boat.self = "https://portfolioproject-334304.wm.r.appspot.com/boats/" + new_boat.id; 
+                res.status(201).send(new_boat); 
+            }); 
+        })
+    }
+});
+
+router.patch('/boats/:boat_id', function (req, res) {
+    if(req.body.name === undefined && req.body.type === undefined && req.body.length === undefined)
+    {
+        res.status(400).json({ 'Error': 'The request object does not contain any relevant attributes' }).end(); 
+    } 
+    else 
+    {
+        get_boat(req.params.boat_Id).then((boat) => {
+            if(req.body.name === undefined)
+            {
+                var name = boat[0].name;
+            }
+            else
+            {
+                var name = req.body.name;
+            }
+            if(req.body.type === undefined)
+            {
+                var type = boat[0].type; 
+            }
+            else
+            {
+                var type = req.body.type; 
+            }
+            if(req.body.length === undefined)
+            {
+                var length = boat[0].length; 
+            }
+            else
+            {
+                var length = req.body.length; 
+            }
+
+            var loads = load[0].loads; 
+            var owner = load[0].owner; 
+
+            put_boat(req.params.boat_id, name, type, length, loads, owner).then(new_boat => { 
+                new_boat.self = "https://portfolioproject-334304.wm.r.appspot.com/boats/" + new_boat.id; 
+                res.status(201).send(new_boat); 
+            }); 
+        })
+    }
+});
 //REINSTATE this route later 
 /*
 
