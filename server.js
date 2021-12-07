@@ -372,8 +372,8 @@ router.patch('/boats/:boat_id', function (req, res) {
                 var length = req.body.length; 
             }
 
-            var loads = load[0].loads; 
-            var owner = load[0].owner; 
+            var loads = boat[0].loads; 
+            var owner = boat[0].owner; 
 
             put_boat(req.params.boat_id, name, type, length, loads, owner).then(new_boat => { 
                 new_boat.self = "https://portfolioproject-334304.wm.r.appspot.com/boats/" + new_boat.id; 
