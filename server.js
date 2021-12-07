@@ -219,12 +219,32 @@ function delete_load(id) {
     return datastore.delete(key); 
 }
 
-function assign_load_to_boat(boat_id, name, type, length, load_array) {
+/*
+function post_boat(name, type, length, owner){
+    var key = datastore.key(BOAT);
+    var loads = []; 
+	const new_boat = {"name": name, "type": type, "length": length, "loads": loads, "owner":owner};
+	return datastore.save({"key":key, "data":new_boat}).then(() => {
+        new_boat.id = key.id; 
+        return new_boat});
+}
+*/
+function assign_load_to_boat(boat_id, name, type, length, load_array, owner) {
     const key = datastore.key([BOAT, parseInt(boat_id, 10)]);
-    const boat = {"name": name, "type": type, "length": length, "loads": load_array}; 
+    const boat = {"name": name, "type": type, "length": length, "loads": load_array, "owner": owner}; 
     return datastore.save({ "key": key, "data": boat });
 }
 
+/*
+function post_load(volume, content) {
+    var key = datastore.key(LOAD);
+    let creation_date = new Date().toLocaleDateString();        //based on code example at source: https://stackabuse.com/how-to-get-the-current-date-in-javascript/
+    const new_load = { "volume": volume, "carrier": null, "content": content, "creation_date": creation_date };
+    return datastore.save({ "key": key, "data": new_load }).then(() => { 
+        new_load.id = key.id; 
+        return new_load });
+}
+*/
 function assign_boat_to_load(load_id, volume, carrier, content, creation_date) {
     const key = datastore.key([LOAD, parseInt(load_id, 10)]);
     const load = { "volume": volume, "carrier": carrier, "content": content, "creation_date": creation_date}; 
@@ -404,25 +424,6 @@ router.patch('/boats/:boat_id', errorJwtPost(), function (req, res) {
         })
     }
 });
-//REINSTATE this route later 
-/*
-
-router.delete('/boats/:boat_id', errorJwtPost(), function(req, res){
-    get_boat(req.params.boat_id).then((boat) => {
-        if(boat[0] === undefined || boat[0] === null){
-            res.status(403).json({"Error": "Invalid boat id"}); 
-        }
-        else if(req.user.sub != boat[0].owner){
-            res.status(403).json({"Error": "Not owner of this boat"}); 
-        }
-        else {
-            delete_boat(req.params.boat_id).then(() => {
-                res.status(204); 
-            })
-        }
-    }); 
-}); 
-*/
 
 router.post('/loads', function (req, res) {
     if(req.body.volume === undefined)
@@ -442,7 +443,6 @@ router.post('/loads', function (req, res) {
     }
 });
 
-
 router.get('/loads', function(req, res) {
     const loads = get_loads(req).then((loads) => {
         get_loads_count().then((total) => {
@@ -458,7 +458,6 @@ router.get('/loads/:load_id', function(req, res){
         res.status(200).json(load[0]); 
     })
 })
-//volume, carrier, content, creation_date
 
 router.put('/loads/:load_id', function (req, res) {
     if(req.body.volume === undefined)
@@ -579,6 +578,52 @@ router.delete('/boats/:boat_id', errorJwtPost(), function(req,res){
         }
     }); 
 });
+
+router.put('/boats/:boat_id/loads/:load_id', function (req, res) {
+    get_boat(req.params.boat_id)
+    .then(boat => 
+        {
+            if (boat[0] === undefined || boat[0] === null) 
+            {
+                res.status(404).json({ 'Error': 'The specified boat and/or load does not exist' }).end(); 
+            }
+
+            else
+            {
+                get_load(req.params.load_id)
+                .then (load =>
+                    {
+                        if (load[0] === undefined || load[0] === null) 
+                        {
+                            res.status(404).json({ 'Error': 'The specified boat and/or load does not exist' }).end(); 
+                        }
+            
+                        else if (load[0].carrier !== null)
+                        {
+                            res.status(403).json({ 'Error': 'This load is already assigned to another boat'}).end(); 
+                        }
+
+                        else
+                        {
+                            var name = boat[0].name;
+                            var type = boat[0].type;
+                            var length = boat[0].length; 
+                            var owner = boat[0].owner; 
+                            const load_array = boat[0].loads; 
+                            load_array.push({"id": req.params.load_id});
+                            assign_load_to_boat(req.params.boat_id, name, type, length, load_array, owner); 
+
+                            var volume = load[0].volume;
+                            var content = load[0].content; 
+                            var creation_date = load[0].creation_date;
+                            const carrier = {"id": req.params.boat_id, "name": name}; 
+                            assign_boat_to_load(req.params.load_id, volume, carrier, content, creation_date); 
+                            res.status(204).end(); 
+                        }
+                    })
+                }
+        })
+}); 
 
 login.post('/', function(req, res){
     const username = req.body.username;
