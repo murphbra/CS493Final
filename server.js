@@ -219,32 +219,13 @@ function delete_load(id) {
     return datastore.delete(key); 
 }
 
-/*
-function post_boat(name, type, length, owner){
-    var key = datastore.key(BOAT);
-    var loads = []; 
-	const new_boat = {"name": name, "type": type, "length": length, "loads": loads, "owner":owner};
-	return datastore.save({"key":key, "data":new_boat}).then(() => {
-        new_boat.id = key.id; 
-        return new_boat});
-}
-*/
+
 function assign_load_to_boat(boat_id, name, type, length, load_array, owner) {
     const key = datastore.key([BOAT, parseInt(boat_id, 10)]);
     const boat = {"name": name, "type": type, "length": length, "loads": load_array, "owner": owner}; 
     return datastore.save({ "key": key, "data": boat });
 }
 
-/*
-function post_load(volume, content) {
-    var key = datastore.key(LOAD);
-    let creation_date = new Date().toLocaleDateString();        //based on code example at source: https://stackabuse.com/how-to-get-the-current-date-in-javascript/
-    const new_load = { "volume": volume, "carrier": null, "content": content, "creation_date": creation_date };
-    return datastore.save({ "key": key, "data": new_load }).then(() => { 
-        new_load.id = key.id; 
-        return new_load });
-}
-*/
 function assign_boat_to_load(load_id, volume, carrier, content, creation_date) {
     const key = datastore.key([LOAD, parseInt(load_id, 10)]);
     const load = { "volume": volume, "carrier": carrier, "content": content, "creation_date": creation_date}; 
