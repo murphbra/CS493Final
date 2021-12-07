@@ -346,7 +346,7 @@ router.patch('/boats/:boat_id', function (req, res) {
     } 
     else 
     {
-        get_boat(req.params.boat_Id).then((boat) => {
+        get_boat(req.params.boat_id).then((boat) => {
             if(req.body.name === undefined)
             {
                 var name = boat[0].name;
