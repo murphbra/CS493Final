@@ -522,7 +522,7 @@ router.delete('/loads/:load_id', function(req, res) {
         {
             if (load[0] === undefined || load[0] === null) 
             {
-                res.status(404).json({ 'Error': 'No load with this load_Id exists' }).end(); 
+                res.status(404).json({ 'Error': 'No load with this load_id exists' }).end(); 
             }
             else
             {
@@ -550,9 +550,32 @@ router.delete('/loads/:load_id', function(req, res) {
 
 }); 
 
-router.delete('/boats/:boat_id', function(req,res){
-    delete_boat(req.params.boat_id); 
-    res.status(204).end(); 
+router.delete('/boats/:boat_id', errorJwtPost(), function(req,res){
+    get_boat(req.params.boat_id).then((boat) => {
+        if(req.user.name !== boat[0].owner)
+        {
+            res.status(403).json({'Error': 'User does not have permission to modify this boat'}); 
+        }
+        else
+        {
+            get_loads_count().then((loads) => {
+                for(var i = 0; i < loads.length; i++)
+                {
+                    if(loads[i].carrier.id === boat[0].id)
+                    {
+                        var id = loads[i].id; 
+                        var volume = loads[i].volume;
+                        var carrier = null; 
+                        var content = loads[i].content; 
+                        var creation_date = loads[i].creation_date; 
+                        put_load(id, volume, carrier, content, creation_date); 
+                    }
+                }
+                delete_boat(req.params.boat_id); 
+                res.status(204).end(); 
+            }); 
+        }
+    }); 
 });
 
 login.post('/', function(req, res){
