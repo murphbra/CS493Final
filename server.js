@@ -305,11 +305,11 @@ router.get('/users', function(req, res) {
     {
         res.status(406).json({'Error': 'Client must accept application/json'}).end(); 
     }
-    if(req.get('Accept') === null)
+    if(req.get('Accept') === undefined)
     {
         res.status(406).json({'Error': 'Client must accept application/json'}).end();
     }
-    
+
     const users = get_users().then((users) => {
         results = {}; 
         for(var i = 0; i<users.length; i++)
