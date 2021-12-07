@@ -102,7 +102,7 @@ function get_boats_by_owner(owner_name, req){
                 {
                     for(var x = 0; x < results.items[i].loads.length; x++)
                     {
-                        results.items[i].loads[x].self =  "https://portfolioproject-334304.wm.r.appspot.com/boats/" + results.items[i].loads[x].id;
+                        results.items[i].loads[x].self =  "https://portfolioproject-334304.wm.r.appspot.com/loads/" + results.items[i].loads[x].id;
                     } 
                 }
             }
@@ -200,7 +200,7 @@ function get_loads(req){
                 results.items[i].self = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + results.items[i].id;
                 if(results.items[i].carrier != null)
                 {
-                    results.items[i].carrier.self = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + results.items[i].carrier.id; 
+                    results.items[i].carrier.self = "https://portfolioproject-334304.wm.r.appspot.com/boats/" + results.items[i].carrier.id; 
                 }
             }
 
@@ -334,6 +334,13 @@ router.get('/boats/:boat_id', errorJwtPost(), function(req, res){
         else
         {
             boat[0].self = "https://portfolioproject-334304.wm.r.appspot.com/boats/" + boat[0].id; 
+            if(boat[0].loads.length > 0)
+            {
+                for(var i = 0; i < boat[0].loads.length; i++)
+                {
+                    boat[0].loads[i].self = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + boat[0].loads[i].id; 
+                }
+            }
             res.status(200).json(boat[0]); 
         }
     });
@@ -455,6 +462,10 @@ router.get('/loads', function(req, res) {
 router.get('/loads/:load_id', function(req, res){
     get_load(req.params.load_id).then((load) => {
         load[0].self = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + load[0].id;
+        if(load[0].carrier !== null)
+        {
+            load[0].carrier.self = "https://portfolioproject-334304.wm.r.appspot.com/boats/" + load[0].carrier.id
+        }
         res.status(200).json(load[0]); 
     })
 })
@@ -618,6 +629,80 @@ router.put('/boats/:boat_id/loads/:load_id', function (req, res) {
                             var creation_date = load[0].creation_date;
                             const carrier = {"id": req.params.boat_id, "name": name}; 
                             assign_boat_to_load(req.params.load_id, volume, carrier, content, creation_date); 
+                            res.status(204).end(); 
+                        }
+                    })
+                }
+        })
+}); 
+
+router.delete('/boats/:boat_id/loads/:load_id', function (req, res) {
+    get_boat(req.params.boat_id)
+    .then(boat => 
+        {
+            if (boat[0] === undefined || boat[0] === null) 
+            {
+                res.status(404).json({ 'Error': 'No boat with this boat_id has a load with this load_id' }).end(); 
+            }
+
+            else
+            {
+                get_load(req.params.load_id)
+                .then (load =>
+                    {
+                        if (load[0] === undefined || load[0] === null) 
+                        {
+                            res.status(404).json({ 'Error': 'No boat with this boat_id has a load with this load_id' }).end(); 
+                        }
+
+                        else if (load[0].carrier === null)
+                        {
+                            res.status(404).json({ 'Error': 'No boat with this boat_id has a load with this load_id'}).end(); 
+                        }
+
+                        else if (load[0].carrier.id != boat[0].id)
+                        {
+                            res.status(404).json({ 'Error': 'No boat with this boat_id has a load with this load_id'}).end(); 
+                        }
+
+                        else
+                        {
+                            /*
+                            var name = boat[0].name;
+                            var type = boat[0].type;
+                            var length = boat[0].length; 
+                            var owner = boat[0].owner; 
+                            const load_array = boat[0].loads; 
+                            load_array.push({"id": req.params.load_id});
+                            assign_load_to_boat(req.params.boat_id, name, type, length, load_array, owner); 
+
+                            var volume = load[0].volume;
+                            var content = load[0].content; 
+                            var creation_date = load[0].creation_date;
+                            const carrier = {"id": req.params.boat_id, "name": name}; 
+                            assign_boat_to_load(req.params.load_id, volume, carrier, content, creation_date); 
+                            res.status(204).end(); 
+                            */
+                            var name = boat[0].name;
+                            var type = boat[0].type;
+                            var length = boat[0].length; 
+                            var owner = boat[0].owner; 
+                            const load_array = boat[0].loads; 
+                            for(i=0; i<load_array.length; i++)
+                            {
+                                if(load_array[i].id == req.params.load_id)
+                                {
+                                    load_array.splice(i, 1); 
+                                }
+                            }
+                            assign_load_to_boat(req.params.boat_id, name, type, length, load_array, owner); 
+
+                            var volume = load[0].volume;
+                            var content = load[0].content; 
+                            var creation_date = load[0].creation_date;
+                            var carrier = null; 
+                            assign_boat_to_load(req.params.load_id, volume, carrier, content, creation_date); 
+
                             res.status(204).end(); 
                         }
                     })
