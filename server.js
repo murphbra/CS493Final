@@ -305,6 +305,20 @@ router.get('/boats', errorJwtPost(), function(req, res) {
     })
 }); 
 
+router.get('/boats/:boat_id', errorJwtPost(), function(req, res){
+    get_boat(req.params.boat_id).then((boat) => {
+        if(req.user.name !== boat[0].owner)
+        {
+            res.status(403).json({'Error': 'User does not have permission to access this boat'}); 
+        }
+        else
+        {
+            boat[0].self = "https://portfolioproject-334304.wm.r.appspot.com/boats/" + boat[0].id; 
+            res.status(200).json(boat[0]); 
+        }
+    });
+});
+
 router.post('/boats', errorJwtPost(), function(req, res){
     post_boat(req.body.name, req.body.type, req.body.length, req.user.name).then((boat) => {
         boat.self = "https://portfolioproject-334304.wm.r.appspot.com/boats/" + boat.id; 
@@ -438,6 +452,12 @@ router.get('/loads', function(req, res) {
     })
 }); 
 
+router.get('/loads/:load_id', function(req, res){
+    get_load(req.params.load_id).then((load) => {
+        load[0].self = "https://portfolioproject-334304.wm.r.appspot.com/loads/" + new_load.id;
+        res.status(200).json(load[0]); 
+    })
+})
 //volume, carrier, content, creation_date
 
 router.put('/loads/:load_id', function (req, res) {
